@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\SysUsers;
 use App\Tramites;
 use App\SysMultivalue;
+use Illuminate\Support\Facades\DB;
 
 class AppMovilController extends Controller
 {
@@ -17,6 +18,7 @@ class AppMovilController extends Controller
 			$response = [
 				"login" => true,
 				"error" => null,
+				"id_user" => $user->id,
 			];
 			return response()->json($response);
 		}else{
@@ -48,21 +50,203 @@ class AppMovilController extends Controller
 	->where('tramites.tipo_doc',$request->tipo_doc)
 	->where('tramites.sexo',$request->sexo)
 	->where('tramites.pais',$codigoelegido)
-	->where('estado',93)
+	->where('estado',9)
 	->join('datos_personales','tramites.nro_doc','datos_personales.nro_doc')->orderBy('tramite_id','desc')->first();
 		//dd($tramite);
 
 		if($tramite)
 		{
+			$clases = DB::table('tramites_clases')
+			->select('clase','description')
+			->join('sys_multivalue','id','clase')
+			->where('tramite_id',$tramite->tramite_id)
+			->where('type','CLAS')
+			->get();
+
+			$patentes = DB::table('tramites_patentes')
+			->select('instancia','patente')
+			->where('tramite_id',$tramite->tramite_id)
+			->get();
+
+			$fechas = DB::table('s_practico')
+			->select('fecha1_reprobado','fecha2_reprobado','fecha3_reprobado','aprobado')
+			->where('tramite_id',$tramite->tramite_id)
+			->get();
+			//dd($fechas);
+
+			$patentesYFechas = DB::table('s_practico')
+			->select('s_practico.clase','fecha1_reprobado','fecha2_reprobado','fecha3_reprobado','aprobado','instancia','patente')
+			->join('tramites_patentes', function($join) {
+				$join->on('s_practico.tramite_id','tramites_patentes.tramite_id');
+				$join->on('s_practico.clase','tramites_patentes.clase');
+			})
+                        ->where('s_practico.tramite_id',$tramite->tramite_id)
+			->get();
+
+			$prueba = DB::table('tramites_clases')
+			->select('tramites_clases.clase','description','fecha1_reprobado','fecha2_reprobado','fecha3_reprobado','aprobado','instancia','patente')
+			->join('tramites_patentes', function($join) {
+                                $join->on('tramites_clases.tramite_id','tramites_patentes.tramite_id');
+                                $join->on('tramites_clases.clase','tramites_patentes.clase');
+                        })
+			->join('s_practico', function($join) {
+                                $join->on('tramites_patentes.tramite_id','s_practico.tramite_id');
+                                $join->on('tramites_patentes.clase','s_practico.clase');
+                        })
+			->join('sys_multivalue','id','tramites_clases.clase')
+                        ->where('tramites_clases.tramite_id',$tramite->tramite_id)
+                        ->where('type','CLAS')
+                        ->get();
+
+
+			foreach($clases as $clase){
+				$clasenum = $clase->clase;
+				$prueba = DB::table('s_practico')
+        	                ->select('fecha1_reprobado','fecha2_reprobado','fecha3_reprobado','aprobado','instancia','patente')
+	                        ->join('tramites_patentes', function($join){
+                        	        $join->on('s_practico.tramite_id','tramites_patentes.tramite_id');
+                                	$join->on('s_practico.clase','tramites_patentes.clase');
+                	        })
+				->where('s_practico.clase',$clasenum)
+        	                ->where('s_practico.tramite_id',$tramite->tramite_id)
+	                        ->get();
+				$clase->fechas = $prueba->toArray();
+				//dd($prueba->toArray());
+			}
+
+
+			//dd($clases);
+
 			$response = [
 				"inicio" => true,
-				"tramite" => $tramite
+				"tramite" => $tramite,
+				"clases" => $clases, 
+				//"patentesYFechas" => $patentesYFechas
 			];
 		}else{
 			$response = [
 				"inicio" => false,
 			];
 		}
+	return response()->json($response);
+    }
+
+	public function postExamen(Request $request)
+    {
+
+	$tramite_id = $request->tramiteId;
+	$patente = $request->patente;
+	$aprobado = $request->estado;
+	$fecha = $request->fecha;
+	$columna = $request->ubicacion;
+	$clase_description = $request->categoriaSeleccionada;
+	$user_id = $request->id_user;
+	$pasa_estado = true;
+
+	switch($columna){
+		case 'fecha1_reprobado':
+			$examinador = 'examinador1';
+			$columna_patente = 'patente1_reprobado';
+			break;
+		case 'aprobado':
+			$examinador = 'examinador1';
+			$columna_patente = 'patente_aprobado';
+			break;
+		case 'fecha2_reprobado':
+			$examinador = 'examinador2';
+			$columna_patente = 'patente2_reprobado';
+			break;
+		case 'fecha3_reprobado':
+			$examinador = 'examinador3';
+			$columna_patente = 'patente3_reprobado';
+			break;
+	}
+
+	$clase = DB::table('sys_multivalue')->where('type','CLAS')->where('description',$clase_description)->first();
+
+	if(!$clase){
+		$response = [
+	                "error" => true,
+                	"data" => "La clase no existe"
+        	];
+        	return response()->json($response);
+	}
+
+	$clase = $clase->id;
+	$practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$clase)->first();
+
+	if($practico){
+		$update_practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$clase)
+				->update([
+					$columna => $fecha,
+					$examinador => $user_id,
+					'modified_by' => $user_id,
+					'modification_date' => date('Y-m-d H:i:s')
+				]);
+
+		$update_patentes = DB::table('tramites_patentes')->insert([
+					'tramite_id' => $tramite_id,
+					'instancia' => $columna_patente,
+					'patente' => $patente,
+					'modified_by' => $user_id,
+					'modification_date' => date('Y-m-d H:i:s'),
+					'clase' => $clase
+				]);
+
+		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->get();
+         	foreach($tramites_clases as $tramite_clase){
+                	$practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$tramite_clase->clase)->first();
+                	 if(!$practico || !$practico->aprobado){
+                        	$pasa_estado = false;
+                         	break;
+                 	}
+         	}
+		if($pasa_estado){
+			$tramite = DB::table('tramites')->where('tramite_id',$tramite_id)->update(['estado' => 12,'modified_by' => $user_id,'modification_date' => date('Y-m-d H:i:s')]);
+		}
+		//dd('existe');
+
+	}else{
+		$tramite_log = DB::table('tramites_log')->where('tramite_id',$tramite_id)->where('estado',1)->first(); // se busca en tramites_log porque en tramites trae a la sucursal como null
+
+		$update_practico = DB::table('s_practico')->insert([
+					'tramite_id' => $tramite_id,
+                                        $columna => $fecha,
+					$examinador => $user_id,
+					'created_by' => $user_id,
+                                        'creation_date' => date('Y-m-d H:i:s'),
+                                        'modified_by' => $user_id,
+                                        'modification_date' => date('Y-m-d H:i:s'),
+					'clase' => $clase,
+					'sucursal' => $tramite_log->sucursal
+                                ]);
+
+                $update_patentes = DB::table('tramites_patentes')->insert([
+                                        'tramite_id' => $tramite_id,
+                                        'instancia' => $columna_patente,
+					'patente' => $patente,
+                                        'modified_by' => $user_id,
+                                        'modification_date' => date('Y-m-d H:i:s'),
+                                        'clase' => $clase
+                                ]);
+
+		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->get();
+	        foreach($tramites_clases as $tramite_clase){
+        	        $practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$tramite_clase->clase)->first();
+                	if(!$practico || !$practico->aprobado){
+                        	$pasa_estado = false;
+	                        break;
+        	        }
+        	}
+		if($pasa_estado){
+			$tramite = DB::table('tramites')->where('tramite_id',$tramite_id)->update(['estado' => 12,'modified_by' => $user_id,'modification_date' => date('Y-m-d H:i:s')]);
+		}
+		//dd('no existe');
+	}
+	$response = [
+		"error" => false,
+		"data" => "Todo ok"
+	];
 	return response()->json($response);
     }
 }

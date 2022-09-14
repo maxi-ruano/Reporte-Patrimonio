@@ -193,7 +193,11 @@ class TramitesController extends Controller
 
     //API CORRESPONDE TRAMITE
     public function get_corresponde_tramite(Request $request){
-	if(isset($request->nrodoc)&&isset($request->sexo)/*&&isset($request->tipodoc)*/){
+	if($request->sexo != "f" && $request->sexo != 'm' && $request->sexo != 'x'){
+
+		$consulta['error'] = "Los parametros ingresados son incorrectos.";
+
+	}else if(isset($request->nrodoc)&&isset($request->sexo)/*&&isset($request->tipodoc)*/){
 		$nro_doc = $request->nrodoc;
 		$sexo = $request->sexo;
 		//$tipo_doc = $request->tipodoc;
