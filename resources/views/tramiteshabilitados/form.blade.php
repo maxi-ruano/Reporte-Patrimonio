@@ -50,7 +50,7 @@
 	    </div> 
 	    <div class="col-md-6 col-xs-12">
                 {!! Form::label('sexo', ' Sexo') !!}
-		{!! Form::select('sexo', ['F' => 'Femenino', 'M' => 'Masculino'], isset($edit) ? $edit->sexo : 'M' , ['class' => 'form-control', 'required' => 'required']) !!} 
+		{!! Form::select('sexo', ['F' => 'Femenino', 'M' => 'Masculino' , 'X' =>  'No Binario'], isset($edit) ? $edit->sexo : 'M' , ['class' => 'form-control', 'required' => 'required']) !!} 
 		<i>(*) Debes seleccionar el sexo para autocompletar los datos.</i>
             </div>
 
