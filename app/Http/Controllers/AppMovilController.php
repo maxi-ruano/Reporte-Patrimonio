@@ -83,25 +83,9 @@ class AppMovilController extends Controller
                         ->where('s_practico.tramite_id',$tramite->tramite_id)
 			->get();
 
-			$prueba = DB::table('tramites_clases')
-			->select('tramites_clases.clase','description','fecha1_reprobado','fecha2_reprobado','fecha3_reprobado','aprobado','instancia','patente')
-			->join('tramites_patentes', function($join) {
-                                $join->on('tramites_clases.tramite_id','tramites_patentes.tramite_id');
-                                $join->on('tramites_clases.clase','tramites_patentes.clase');
-                        })
-			->join('s_practico', function($join) {
-                                $join->on('tramites_patentes.tramite_id','s_practico.tramite_id');
-                                $join->on('tramites_patentes.clase','s_practico.clase');
-                        })
-			->join('sys_multivalue','id','tramites_clases.clase')
-                        ->where('tramites_clases.tramite_id',$tramite->tramite_id)
-                        ->where('type','CLAS')
-                        ->get();
-
-
 			foreach($clases as $clase){
 				$clasenum = $clase->clase;
-				$prueba = DB::table('s_practico')
+				$s_practico = DB::table('s_practico')
         	                ->select('fecha1_reprobado','fecha2_reprobado','fecha3_reprobado','aprobado','instancia','patente')
 	                        ->join('tramites_patentes', function($join){
                         	        $join->on('s_practico.tramite_id','tramites_patentes.tramite_id');
@@ -110,8 +94,7 @@ class AppMovilController extends Controller
 				->where('s_practico.clase',$clasenum)
         	                ->where('s_practico.tramite_id',$tramite->tramite_id)
 	                        ->get();
-				$clase->fechas = $prueba->toArray();
-				//dd($prueba->toArray());
+				$clase->fechas = $s_practico->toArray();
 			}
 
 
@@ -120,7 +103,7 @@ class AppMovilController extends Controller
 			$response = [
 				"inicio" => true,
 				"tramite" => $tramite,
-				"clases" => $clases, 
+				"clases" => $clases,
 				//"patentesYFechas" => $patentesYFechas
 			];
 		}else{
@@ -147,10 +130,24 @@ class AppMovilController extends Controller
 		case 'fecha1_reprobado':
 			$examinador = 'examinador1';
 			$columna_patente = 'patente1_reprobado';
+			$s_practico = [
+                                'aprobado' => null,
+                                'fecha2_reprobado' => null,
+                                'fecha3_reprobado' => null,
+				'examinador2' => null,
+                                'examinador3' => null
+		        ];
 			break;
 		case 'aprobado':
 			$examinador = 'examinador1';
 			$columna_patente = 'patente_aprobado';
+			$s_practico = [
+                                'fecha1_reprobado' => null,
+                                'fecha2_reprobado' => null,
+                                'fecha3_reprobado' => null,
+				'examinador2' => null,
+				'examinador3' => null
+                        ];
 			break;
 		case 'fecha2_reprobado':
 			$examinador = 'examinador2';
@@ -209,17 +206,19 @@ class AppMovilController extends Controller
 	}else{
 		$tramite_log = DB::table('tramites_log')->where('tramite_id',$tramite_id)->where('estado',1)->first(); // se busca en tramites_log porque en tramites trae a la sucursal como null
 
-		$update_practico = DB::table('s_practico')->insert([
-					'tramite_id' => $tramite_id,
-                                        $columna => $fecha,
-					$examinador => $user_id,
-					'created_by' => $user_id,
-                                        'creation_date' => date('Y-m-d H:i:s'),
-                                        'modified_by' => $user_id,
-                                        'modification_date' => date('Y-m-d H:i:s'),
-					'clase' => $clase,
-					'sucursal' => $tramite_log->sucursal
-                                ]);
+		$datos = [
+			'tramite_id' => $tramite_id,
+                        $columna => $fecha,
+                        $examinador => $user_id,
+                        'created_by' => $user_id,
+                        'modified_by' => $user_id,
+                        'clase' => $clase,
+                        'sucursal' => $tramite_log->sucursal
+		];
+
+		$insert = array_merge($datos,$s_practico);
+//		dd($insert);
+		$update_practico = DB::table('s_practico')->insert($insert);
 
                 $update_patentes = DB::table('tramites_patentes')->insert([
                                         'tramite_id' => $tramite_id,
