@@ -11,7 +11,7 @@ class TramitesController extends Controller
 {
     //Ignore los Estado Borrado o Cancelado
     private $estadosIgnore = ['93','94']; 
-    
+ 
     public function __construct() {
       $this->Sigeci = new SigeciController();
     }
@@ -297,5 +297,109 @@ class TramitesController extends Controller
 
 	return response()->json($consulta);
 
-    } //fin funcion api
+    } //fin funcion api get_tramite_corresponde
+
+    public function get_inhabilitacion(Request $request){
+	if($request->sexo != "f" && $request->sexo != 'm' && $request->sexo != 'x'){
+
+	        $consulta['error'] = "Los parametros ingresados son incorrectos.";
+
+        }else if(isset($request->nrodoc)&&isset($request->sexo)/*&&isset($request->tipodoc)*/){
+		$consulta = [
+			'nrodoc' => $request->nrodoc,
+                        'sexo' => $request->sexo,
+		];
+
+		$inhabilitado = DB::table('inhabilitados')
+					->select('inhabilitados.motivo','descripcion')
+					->join('motivos_inhabilitacion','motivos_inhabilitacion.motivo_id','inhabilitados.motivo')
+					->where('doc_num',$request->nrodoc)
+					->where('sexo',$request->sexo)
+					->where(function($query){
+						$query->where('rehabilitado',false)
+							->orWhereNull('rehabilitado');
+					})
+					->whereNotIn('motivo',['14','15','26','27','28','29','45','46','57','58','100']) //retenidos y otras cosas que tratan de ser retenidos
+				->get();
+		if($inhabilitado->isNotEmpty()){
+			$consulta['inhabilitado'] = true;
+			$inhabilitado->each(function ($array) {
+				switch($array->motivo){
+					//Legales
+					case 1:
+					case 5:
+					case 6:
+					case 7:
+					case 8:
+					case 17:
+					case 18:
+					case 19:
+					case 20:
+					case 22:
+					case 23:
+					case 24:
+					case 25:
+					case 31:
+					case 32:
+					case 33:
+					case 35:
+					case 37:
+					case 38:
+					case 39:
+					case 40:
+					case 41:
+					case 42:
+					case 49:
+					case 55:
+					case 56:
+					case 98:
+					   $array->derivacion = "legalesdghc@buenosaires.gob.ar";
+					   $array->requisitos = "En el asunto del mail indicar: nombre, apellido y número de documento. En el cuerpo del mail indicar el motivo de inhabilitación";
+					   break;
+					//DGAI
+					case 0:
+					case 2:
+					case 9:
+					case 10:
+					case 51:
+					case 53:
+					   $array->derivacion = "https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial";
+					   $array->requisitos = "";
+					   break;
+					//Medico
+					case 4:
+					case 12:
+					case 13:
+					case 16:
+					case 54:
+					   $array->derivacion = "https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir";
+					   $array->requisitos = "";
+					   break;
+					case 3:
+					case 21:
+					case 30:
+					case 34:
+					case 43:
+					case 47:
+					case 48:
+					   $array->derivacion = "subgerenciaapfis@buenosaires.gob.ar";
+					   $array->requisitos = "En el asunto del mail indicar el motivo de inhabilitación. En el cuerpo del mail indicar: nombre, apellido, numero de documento y nacionalidad";
+					   break;
+					default:
+					   $array->derivacion = "";
+					   break;
+				}
+			});
+			//dd($inhabilitado);
+			$consulta['inhabilitaciones'] = $inhabilitado;
+		}else{
+			$consulta['inhabilitado'] = false;
+		}
+//		dd($consulta);
+
+	}else{
+		$consulta['error'] = "Los parametros ingresados son incorrectos.";
+	}
+	return response()->json($consulta);
+    }
 }
