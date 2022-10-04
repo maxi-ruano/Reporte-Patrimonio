@@ -319,7 +319,7 @@ class TramitesController extends Controller
 						$query->where('rehabilitado',false)
 							->orWhereNull('rehabilitado');
 					})
-					->whereNotIn('motivo',['14','15','26','27','28','29','45','46','57','58','100']) //retenidos y otras cosas que tratan de ser retenidos
+					->whereNotIn('motivo',['14','15','26','27','28','29','45','46','57','58','99','100']) //retenidos y otras cosas que tratan de ser retenidos
 				->get();
 		if($inhabilitado->isNotEmpty()){
 			$consulta['inhabilitado'] = true;
@@ -350,6 +350,8 @@ class TramitesController extends Controller
 					case 41:
 					case 42:
 					case 49:
+					case 50:
+					case 52:
 					case 55:
 					case 56:
 					case 98:
@@ -357,7 +359,6 @@ class TramitesController extends Controller
 					   $array->requisitos = "En el asunto del mail indicar: nombre, apellido y número de documento. En el cuerpo del mail indicar el motivo de inhabilitación";
 					   break;
 					//DGAI
-					case 0:
 					case 2:
 					case 9:
 					case 10:
