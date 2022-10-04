@@ -12,7 +12,12 @@ class AppMovilController extends Controller
 {
     public function auth(Request $request)
     {
-	$user = SysUsers::where('username',$request->username)->first();
+	$user = SysUsers::join('sys_user_role','sys_users.id','sys_user_role.user_id')
+		->where('username',$request->username)
+		->whereIn('role_id',[8,79])
+		->where('sector',9)
+		->first();
+
 	if($user){
 		if(hash('md5',$request->password) == $user->password){
 			$response = [
