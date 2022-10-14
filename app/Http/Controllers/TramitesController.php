@@ -259,7 +259,7 @@ class TramitesController extends Controller
                                 }else{ //antes del decreto
                                         if($fec_vencimiento_licencia >= $fecha_fin_ob){ //si venció después del decreto, reimpresiones obligatorias
                                                 if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date("Y-m-d")."-12 month"))){
-                                                        $corresponde = 1;
+							$corresponde = 1;
                                                 }else{
                                                         $corresponde = 2;
                                                 }
@@ -274,9 +274,13 @@ class TramitesController extends Controller
 									$corresponde = 2;
 								}else if ($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 36 month"))){
 									$corresponde = 1;
+								}else{
+									$corresponde = 4; //esto es porque esta inhabilitado
 								}
-							}else if (($fec_vencimiento_licencia >= $fecha_ini_op && $fec_vencimiento_licencia <= $fecha_fin_op) && $fec_vencimiento_licencia >= date("Y-m-d",strtotime(date('Y-m-d')."-12 month"))){
+							}else if (($fec_vencimiento_licencia >= $fecha_ini_ob && $fec_vencimiento_licencia <= $fecha_fin_ob) && $fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."-12 month"))){
 								$corresponde = 1;
+							}else{
+								$corresponde = 3; //esto es porque esta inhabilitado
 							}
 						}
 					}
@@ -400,6 +404,67 @@ class TramitesController extends Controller
 
 	}else{
 		$consulta['error'] = "Los parametros ingresados son incorrectos.";
+	}
+	return response()->json($consulta);
+    }
+
+    public function get_retencion(Request $request){
+	if($request->sexo != "f" && $request->sexo != 'm' && $request->sexo != 'x'){
+
+                $consulta['error'] = "Los parametros ingresados son incorrectos.";
+
+        } else if(isset($request->nrodoc)&&isset($request->sexo)/*&&isset($request->tipodoc)*/){
+                $consulta = [
+                        'nrodoc' => $request->nrodoc,
+                        'sexo' => $request->sexo,
+                ];
+
+                $retenido = DB::table('inhabilitados')
+                                        ->select('inhabilitados.motivo','descripcion')
+                                        ->join('motivos_inhabilitacion','motivos_inhabilitacion.motivo_id','inhabilitados.motivo')
+                                        ->where('doc_num',$request->nrodoc)
+                                        ->where('sexo',$request->sexo)
+                                        ->where(function($query){
+                                                $query->where('rehabilitado',false)
+                                                        ->orWhereNull('rehabilitado');
+                                        })
+                                        ->whereIn('motivo',['26','27','28','29','45','57','58','100']) //retenidos y otras cosas que tratan de ser retenidos
+					->get();
+
+		if($retenido->isNotEmpty()){
+			$consulta['retenido'] = true;
+			$retenido->each(function($array){
+				switch($array->motivo){
+					case 26:
+						$array->derivacion = "";
+						break;
+					case 27:
+						$array->derivacion = "";
+						break;
+					case 28:
+						$array->derivacion = "";
+						break;
+					case 29:
+						$array->derivacion = "";
+						break;
+					case 45:
+						$array->derivacion = "";
+						break;
+					case 57:
+						$array->derivacion = "";
+						break;
+					case 58:
+						$array->derivacion = "";
+						break;
+					case 100:
+						$array->derivacion = "";
+						break;
+				}
+			});
+			$consulta['retencion'] = $retenido;
+		}else{
+			$consulta['retenido']= false;
+		}
 	}
 	return response()->json($consulta);
     }
