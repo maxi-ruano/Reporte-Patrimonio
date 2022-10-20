@@ -377,6 +377,7 @@ class TramitesController extends Controller
 					case 13:
 					case 16:
 					case 54:
+					   $array->descripcion = "Psicofísica";
 					   $array->derivacion = "https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir";
 					   $array->requisitos = "";
 					   break;
@@ -387,11 +388,13 @@ class TramitesController extends Controller
 					case 43:
 					case 47:
 					case 48:
+					   $array->descripcion = "Psicofísica";
 					   $array->derivacion = "subgerenciaapfis@buenosaires.gob.ar";
 					   $array->requisitos = "En el asunto del mail indicar el motivo de inhabilitación. En el cuerpo del mail indicar: nombre, apellido, numero de documento y nacionalidad";
 					   break;
 					default:
-					   $array->derivacion = "";
+					   $array->derivacion = "legalesdghc@buenosaires.gob.ar";
+					   $array->requisitos = "En el asunto del mail indicar: nombre, apellido y número de documento. En el cuerpo del mail indicar el motivo de inhabilitación";
 					   break;
 				}
 			});
