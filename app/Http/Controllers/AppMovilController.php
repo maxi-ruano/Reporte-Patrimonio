@@ -42,30 +42,39 @@ class AppMovilController extends Controller
 	}
     }
 
-	public function buscarTramite(Request $request)
+    public function buscarTramite(Request $request)
     {
 		$codigopais = SysMultivalue::where('description','ILIKE',"%".$request->description."%")
 		->select('id')
 		->first();
 
-	$codigoelegido = $codigopais->id;
+		$codigoelegido = $codigopais->id;
 
-	$tramite = Tramites::where('tramites.nro_doc',$request->nro_doc)
-	->select('tramites.tramite_id', 'tramites.nro_doc', 'tramites.sexo' , 'datos_personales.nombre' ,'datos_personales.apellido','tramites.pais')
-	->where('tramites.tipo_doc',$request->tipo_doc)
-	->where('tramites.sexo',$request->sexo)
-	->where('tramites.pais',$codigoelegido)
-	->where('estado',9)
-	->join('datos_personales','tramites.nro_doc','datos_personales.nro_doc')->orderBy('tramite_id','desc')->first();
+		$tramite = Tramites::where('tramites.nro_doc',$request->nro_doc)
+		->select('tramites.tramite_id', 'tramites.nro_doc', 'tramites.sexo' , 'datos_personales.nombre' ,'datos_personales.apellido','tramites.pais', 'tramites.fec_inicio')
+		->where('tramites.tipo_doc',$request->tipo_doc)
+		->where('tramites.sexo',$request->sexo)
+		->where('tramites.pais',$codigoelegido)
+		->where('estado',9)
+		->join('datos_personales','tramites.nro_doc','datos_personales.nro_doc')->orderBy('tramite_id','desc')->first();
 		//dd($tramite);
+
+		$fec_vencimiento_tramite = date('Y-m-d',strtotime($tramite->fec_inicio."+180 days"));
 
 		if($tramite)
 		{
+		    if($fec_vencimiento_tramite < date('Y-m-d')){
+			$response = [
+				"inicio" => false,
+				"estado" => 100, //pusimos 100 como representacion de que esta vencido
+			];
+		    }else{
 			$clases = DB::table('tramites_clases')
 			->select('clase','description')
 			->join('sys_multivalue','id','clase')
 			->where('tramite_id',$tramite->tramite_id)
 			->where('type','CLAS')
+			->where('otorgada',true)
 			->get();
 
 			$patentes = DB::table('tramites_patentes')
@@ -111,9 +120,19 @@ class AppMovilController extends Controller
 				"clases" => $clases,
 				//"patentesYFechas" => $patentesYFechas
 			];
+		    }
 		}else{
+			$estado = Tramites::where('tramites.nro_doc',$request->nro_doc)
+				->select('estado')
+			        ->where('tramites.tipo_doc',$request->tipo_doc)
+			        ->where('tramites.sexo',$request->sexo)
+		        	->where('tramites.pais',$codigoelegido)
+			        ->whereNotIn('estado',[14,95,9,93])
+			->orderBy('tramite_id','desc')->first();
+
 			$response = [
 				"inicio" => false,
+				"estado" => $estado->estado,
 			];
 		}
 	return response()->json($response);
@@ -195,7 +214,7 @@ class AppMovilController extends Controller
 					'clase' => $clase
 				]);
 
-		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->get();
+		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->where('otorgada',true)->get();
          	foreach($tramites_clases as $tramite_clase){
                 	$practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$tramite_clase->clase)->first();
                 	 if(!$practico || !$practico->aprobado){
@@ -234,7 +253,7 @@ class AppMovilController extends Controller
                                         'clase' => $clase
                                 ]);
 
-		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->get();
+		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->where('otorgada',true)->get();
 	        foreach($tramites_clases as $tramite_clase){
         	        $practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$tramite_clase->clase)->first();
                 	if(!$practico || !$practico->aprobado){
