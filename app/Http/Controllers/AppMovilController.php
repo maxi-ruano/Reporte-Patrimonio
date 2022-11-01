@@ -59,10 +59,11 @@ class AppMovilController extends Controller
 		->join('datos_personales','tramites.nro_doc','datos_personales.nro_doc')->orderBy('tramite_id','desc')->first();
 		//dd($tramite);
 
-		$fec_vencimiento_tramite = date('Y-m-d',strtotime($tramite->fec_inicio."+180 days"));
-
 		if($tramite)
 		{
+
+		    $fec_vencimiento_tramite = date('Y-m-d',strtotime($tramite->fec_inicio."+180 days"));
+
 		    if($fec_vencimiento_tramite < date('Y-m-d')){
 			$response = [
 				"inicio" => false,
