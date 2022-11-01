@@ -128,7 +128,7 @@ class AppMovilController extends Controller
 			        ->where('tramites.tipo_doc',$request->tipo_doc)
 			        ->where('tramites.sexo',$request->sexo)
 		        	->where('tramites.pais',$codigoelegido)
-			        ->whereNotIn('estado',[14,95,9,93])
+			        ->whereNotIn('estado',[9])
 			->orderBy('tramite_id','desc')->first();
 
 			$response = [
