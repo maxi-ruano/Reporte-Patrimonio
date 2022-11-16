@@ -68,6 +68,7 @@ Route::group(['prefix'=>'appMovil'], function(){
    Route::get('getCodigoPais','AppMovilController@getCodigoPais');
    Route::get('buscarTramite','AppMovilController@buscarTramite');
    Route::post('postExamen','AppMovilController@postExamen');
+   Route::get('getPatentesKeko','AppMovilController@getPatentesKeko');
 });
 
 Route::fallback(function(){

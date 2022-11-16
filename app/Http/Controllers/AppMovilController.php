@@ -51,7 +51,7 @@ class AppMovilController extends Controller
 		$codigoelegido = $codigopais->id;
 
 		$tramite = Tramites::where('tramites.nro_doc',$request->nro_doc)
-		->select('tramites.tramite_id', 'tramites.nro_doc', 'tramites.sexo' , 'datos_personales.nombre' ,'datos_personales.apellido','tramites.pais', 'tramites.fec_inicio')
+		->select('tramites.tramite_id', 'tramites.nro_doc', 'tramites.sexo' , 'datos_personales.nombre' ,'datos_personales.apellido','tramites.pais', 'tramites.fec_inicio','tramites.tipo_tramite_id')
 		->where('tramites.tipo_doc',$request->tipo_doc)
 		->where('tramites.sexo',$request->sexo)
 		->where('tramites.pais',$codigoelegido)
@@ -70,13 +70,37 @@ class AppMovilController extends Controller
 				"estado" => 100, //pusimos 100 como representacion de que esta vencido
 			];
 		    }else{
-			$clases = DB::table('tramites_clases')
-			->select('clase','description')
-			->join('sys_multivalue','id','clase')
-			->where('tramite_id',$tramite->tramite_id)
-			->where('type','CLAS')
-			->where('otorgada',true)
-			->get();
+			$tramites_ampliacion = ['1002','1005','1006','1016','1017','1023','1025','1026'];
+
+			if( in_array( $tramite->tipo_tramite_id , $tramites_ampliacion)){
+
+				$clases_ampliar = DB::table('ansv_ampliacion_clases')
+				->select('clases_dif')
+				->where('tramite_id',$tramite->tramite_id)
+				->first();
+
+				$clases_ampliar_array = explode(',',$clases_ampliar->clases_dif);
+
+				$clases = DB::table('tramites_clases')
+                                ->select('clase','description')
+                                ->join('sys_multivalue','id','clase')
+                                ->where('tramite_id',$tramite->tramite_id)
+                                ->where('type','CLAS')
+                                ->where('otorgada',true)
+				->whereIn('description',$clases_ampliar_array)
+                                ->get();
+
+				//dd($clases);
+
+			}else{
+				$clases = DB::table('tramites_clases')
+				->select('clase','description')
+				->join('sys_multivalue','id','clase')
+				->where('tramite_id',$tramite->tramite_id)
+				->where('type','CLAS')
+				->where('otorgada',true)
+				->get();
+			}
 
 			$patentes = DB::table('tramites_patentes')
 			->select('instancia','patente')
@@ -89,14 +113,14 @@ class AppMovilController extends Controller
 			->get();
 			//dd($fechas);
 
-			$patentesYFechas = DB::table('s_practico')
+			/*$patentesYFechas = DB::table('s_practico')
 			->select('s_practico.clase','fecha1_reprobado','fecha2_reprobado','fecha3_reprobado','aprobado','instancia','patente')
 			->join('tramites_patentes', function($join) {
 				$join->on('s_practico.tramite_id','tramites_patentes.tramite_id');
 				$join->on('s_practico.clase','tramites_patentes.clase');
 			})
                         ->where('s_practico.tramite_id',$tramite->tramite_id)
-			->get();
+			->get();*/
 
 			foreach($clases as $clase){
 				$clasenum = $clase->clase;
@@ -215,7 +239,33 @@ class AppMovilController extends Controller
 					'clase' => $clase
 				]);
 
-		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->where('otorgada',true)->get();
+
+		$tramites_ampliacion = ['1002','1003','1004','1022'];
+		$tramite = DB::table('tramites')
+				->select('tipo_tramite_id')
+				->where('tramite_id',$tramite_id)
+				->first();
+
+		if(in_array($tramite->tipo_tramite_id , $tramites_ampliacion)){
+			$clases_ampliar = DB::table('ansv_ampliacion_clases')
+                                ->select('clases_dif')
+                                ->where('tramite_id',$tramite->tramite_id)
+                                ->first();
+
+                        $clases_ampliar_array = explode(',',$clases_ampliar->clases_dif);
+
+			$tramites_clases = DB::table('tramites_clases')
+                                ->select('clase','description')
+                                ->join('sys_multivalue','id','clase')
+                                ->where('tramite_id',$tramite->tramite_id)
+                                ->where('type','CLAS')
+                                ->where('otorgada',true)
+                                ->whereIn('description',$clases_ampliar_array)
+                                ->get();
+		}else{
+			$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->where('otorgada',true)->get();
+		}
+
          	foreach($tramites_clases as $tramite_clase){
                 	$practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$tramite_clase->clase)->first();
                 	 if(!$practico || !$practico->aprobado){
@@ -229,7 +279,7 @@ class AppMovilController extends Controller
 		//dd('existe');
 
 	}else{
-		$tramite_log = DB::table('tramites_log')->where('tramite_id',$tramite_id)->where('estado',1)->first(); // se busca en tramites_log porque en tramites trae a la sucursal como null
+		$tramite_log = DB::table('tramites_log')->where('tramite_id',$tramite_id)->where('estado',2)->first(); // se busca en tramites_log porque en tramites trae a la sucursal como null
 
 		$datos = [
 			'tramite_id' => $tramite_id,
@@ -254,7 +304,31 @@ class AppMovilController extends Controller
                                         'clase' => $clase
                                 ]);
 
-		$tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->where('otorgada',true)->get();
+		$tramites_ampliacion = ['1002','1005','1006','1016','1017','1023','1025','1026'];
+                $tramite = DB::table('tramites')
+                                ->select('tipo_tramite_id')
+                                ->where('tramite_id',$tramite_id)
+                                ->first();
+
+                if( in_array($tramite->tipo_tramite_id , $tramites_ampliacion)){
+                        $clases_ampliar = DB::table('ansv_ampliacion_clases')
+                                ->select('clases_dif')
+                                ->where('tramite_id',$tramite_id)
+                                ->first();
+
+                        $clases_ampliar_array = explode(',',$clases_ampliar->clases_dif);
+
+                        $tramites_clases = DB::table('tramites_clases')
+                                ->select('clase','description')
+                                ->join('sys_multivalue','id','clase')
+                                ->where('tramite_id',$tramite_id)
+                                ->where('type','CLAS')
+                                ->where('otorgada',true)
+                                ->whereIn('description',$clases_ampliar_array)
+                                ->get();
+                }else{
+                        $tramites_clases = DB::table('tramites_clases')->where('tramite_id',$tramite_id)->where('otorgada',true)->get();
+                }
 	        foreach($tramites_clases as $tramite_clase){
         	        $practico = DB::table('s_practico')->where('tramite_id',$tramite_id)->where('clase',$tramite_clase->clase)->first();
                 	if(!$practico || !$practico->aprobado){
@@ -272,5 +346,31 @@ class AppMovilController extends Controller
 		"data" => "Todo ok"
 	];
 	return response()->json($response);
+    }
+
+    public function getPatentesKeko(Request $request){
+
+        if(!$request->tramite_id){
+                $response = [
+                        "error" => true,
+                ];
+                return response()->json($response);
+        }
+
+        $tramite = DB::table('tramites_log')->where("tramite_id",$request->tramite_id)->where("estado","2")->first();
+        $sucursal_id = $tramite->sucursal;
+
+        $patentes = DB::table("sedes_patentes")
+                ->select('patente')
+                ->join("patentes","patentes.id","sedes_patentes.patente_id")
+                ->where("sede_id",$sucursal_id)
+                ->get()
+                ->toArray();
+
+        $response = [
+                "error"=>false,
+		"patente" => $patentes
+        ];
+        return response()->json($response);
     }
 }
