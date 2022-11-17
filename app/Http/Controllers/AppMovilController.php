@@ -274,7 +274,8 @@ class AppMovilController extends Controller
                  	}
          	}
 		if($pasa_estado){
-			$tramite = DB::table('tramites')->where('tramite_id',$tramite_id)->update(['estado' => 12,'modified_by' => $user_id,'modification_date' => date('Y-m-d H:i:s')]);
+			$tramite_log = DB::table('tramites_log')->where('tramite_id',$tramite_id)->where('estado',2)->first(); // se busca en tramites_log porque en tramites trae a la sucursal como null
+			$tramite = DB::table('tramites')->where('tramite_id',$tramite_id)->update(['estado' => 12,'modified_by' => $user_id,'modification_date' => date('Y-m-d H:i:s'),'sucursal' => $tramite_log->sucursal]);
 		}
 		//dd('existe');
 
@@ -337,7 +338,7 @@ class AppMovilController extends Controller
         	        }
         	}
 		if($pasa_estado){
-			$tramite = DB::table('tramites')->where('tramite_id',$tramite_id)->update(['estado' => 12,'modified_by' => $user_id,'modification_date' => date('Y-m-d H:i:s')]);
+			$tramite = DB::table('tramites')->where('tramite_id',$tramite_id)->update(['estado' => 12,'modified_by' => $user_id,'modification_date' => date('Y-m-d H:i:s'),'sucursal' => $tramite_log->sucursal]);
 		}
 		//dd('no existe');
 	}
