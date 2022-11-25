@@ -315,8 +315,8 @@ class TramitesController extends Controller
 		];
 
 		$inhabilitado = DB::table('inhabilitados')
-					->select('inhabilitados.motivo','descripcion')
-					->join('motivos_inhabilitacion','motivos_inhabilitacion.motivo_id','inhabilitados.motivo')
+					->select('inhabilitados.motivo')
+					//->join('motivos_inhabilitacion','motivos_inhabilitacion.motivo_id','inhabilitados.motivo') en caso de querer mandar la descripcion del motivo
 					->where('doc_num',$request->nrodoc)
 					->where('sexo',$request->sexo)
 					->where(function($query){
@@ -359,8 +359,10 @@ class TramitesController extends Controller
 					case 55:
 					case 56:
 					case 98:
-					   $array->derivacion = "legalesdghc@buenosaires.gob.ar";
-					   $array->requisitos = "En el asunto del mail indicar: nombre, apellido y número de documento. En el cuerpo del mail indicar el motivo de inhabilitación";
+					   $mensaje = 'Tu trámite se encuentra inhabilitado.' . "\n\n";
+					   $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
+					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
+					   $array->derivacion = $mensaje;
 					   break;
 					//DGAI
 					case 2:
@@ -368,8 +370,11 @@ class TramitesController extends Controller
 					case 10:
 					case 51:
 					case 53:
-					   $array->derivacion = "https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial";
-					   $array->requisitos = "";
+					   $mensaje = 'Tu trámite se encuentra inhabilitado por un Controlador de la DGAI.'  . "\n\n";
+					   $mensaje .= "Para resolver tu situación, tenés que presentarte personalmente en la Sede Central de la DGAI." . "\n";
+					   $mensaje .= "Regimiento de Patricios N° 65, de 8 a 19 hs." . "\n\n";
+					   $mensaje .= "Para más información, entrá a https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial";
+					   $array->derivacion = $mensaje;
 					   break;
 					//Medico
 					case 4:
@@ -377,9 +382,9 @@ class TramitesController extends Controller
 					case 13:
 					case 16:
 					case 54:
-					   $array->descripcion = "Psicofísica";
-					   $array->derivacion = "https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir";
-					   $array->requisitos = "";
+					   $mensaje = "Tu trámite se encuentra inhabilitado." . "\n\n";
+					   $mensaje .= "Entrá a https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir para resolverlo.";
+					   $array->derivacion = $mensaje;
 					   break;
 					case 3:
 					case 21:
@@ -388,13 +393,16 @@ class TramitesController extends Controller
 					case 43:
 					case 47:
 					case 48:
-					   $array->descripcion = "Psicofísica";
-					   $array->derivacion = "subgerenciaapfis@buenosaires.gob.ar";
-					   $array->requisitos = "En el asunto del mail indicar el motivo de inhabilitación. En el cuerpo del mail indicar: nombre, apellido, numero de documento y nacionalidad";
+					   $mensaje = "Tu trámite se encuentra inhabilitado." . "\n\n";
+					   $mensaje .= "Para continuar, *mandá un mail a subgerenciaapfis@buenosaires.gob.ar* aclarando tu *nombre, apellido, número de documento y nacionalidad.*" . "\n\n";
+					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
+					   $array->derivacion = $mensaje;
 					   break;
 					default:
-					   $array->derivacion = "legalesdghc@buenosaires.gob.ar";
-					   $array->requisitos = "En el asunto del mail indicar: nombre, apellido y número de documento. En el cuerpo del mail indicar el motivo de inhabilitación";
+					   $mensaje = "Tu trámite se encuentra inhabilitado." . "\n\n";
+                                           $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
+                                           $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
+					   $array->derivacion = $mensaje;
 					   break;
 				}
 			});
