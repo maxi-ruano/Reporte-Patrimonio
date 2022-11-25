@@ -359,7 +359,7 @@ class TramitesController extends Controller
 					case 55:
 					case 56:
 					case 98:
-					   $mensaje = 'Tu trámite se encuentra inhabilitado.' . "\n\n";
+					   $mensaje = 'tu trámite se encuentra inhabilitado.' . "\n\n";
 					   $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
 					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
 					   $array->derivacion = $mensaje;
@@ -370,8 +370,8 @@ class TramitesController extends Controller
 					case 10:
 					case 51:
 					case 53:
-					   $mensaje = 'Tu trámite se encuentra inhabilitado por un Controlador de la DGAI.'  . "\n\n";
-					   $mensaje .= "Para resolver tu situación, tenés que presentarte personalmente en la Sede Central de la DGAI." . "\n";
+					   $mensaje = 'tu trámite se encuentra inhabilitado por un Controlador de la DGAI.'  . "\n\n";
+					   $mensaje .= "Para resolver tu situación, tenés que *presentarte personalmente en la Sede Central de la DGAI*." . "\n";
 					   $mensaje .= "Regimiento de Patricios N° 65, de 8 a 19 hs." . "\n\n";
 					   $mensaje .= "Para más información, entrá a https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial";
 					   $array->derivacion = $mensaje;
@@ -382,7 +382,7 @@ class TramitesController extends Controller
 					case 13:
 					case 16:
 					case 54:
-					   $mensaje = "Tu trámite se encuentra inhabilitado." . "\n\n";
+					   $mensaje = "*tu trámite se encuentra inhabilitado*." . "\n\n";
 					   $mensaje .= "Entrá a https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir para resolverlo.";
 					   $array->derivacion = $mensaje;
 					   break;
@@ -393,13 +393,13 @@ class TramitesController extends Controller
 					case 43:
 					case 47:
 					case 48:
-					   $mensaje = "Tu trámite se encuentra inhabilitado." . "\n\n";
+					   $mensaje = "tu trámite se encuentra inhabilitado." . "\n\n";
 					   $mensaje .= "Para continuar, *mandá un mail a subgerenciaapfis@buenosaires.gob.ar* aclarando tu *nombre, apellido, número de documento y nacionalidad.*" . "\n\n";
 					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
 					   $array->derivacion = $mensaje;
 					   break;
 					default:
-					   $mensaje = "Tu trámite se encuentra inhabilitado." . "\n\n";
+					   $mensaje = "tu trámite se encuentra inhabilitado." . "\n\n";
                                            $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
                                            $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
 					   $array->derivacion = $mensaje;
