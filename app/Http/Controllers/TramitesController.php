@@ -363,6 +363,11 @@ class TramitesController extends Controller
 					   $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
 					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
 					   $array->derivacion = $mensaje;
+					   $mensaje_web = '<p><strong>Mandar un correo eléctronico</strong> a';
+					   $mensaje_web .= '  <a href="mailto:legalesdghc@buenosaires.gob.ar" target="_blank;">legalesdghc@buenosaires.gob.ar</a> aclarando tu <ul>';
+					   $mensaje_web .= '<li><strong>Nombre y Apellido</strong></li> <li><strong>Número de documento</strong></li>';
+					   $mensaje_web .= '</ul> Te responderemos en 72 horas hábiles.</p>';
+					   $array->web = $mensaje_web;
 					   break;
 					//DGAI
 					case 2:
@@ -375,6 +380,13 @@ class TramitesController extends Controller
 					   $mensaje .= "Regimiento de Patricios N° 65, de 8 a 19 hs." . "\n\n";
 					   $mensaje .= "Para más información, entrá a https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial";
 					   $array->derivacion = $mensaje;
+					   $mensaje_web = '<p>Presentarte personalmente en la';
+					   $mensaje_web .= ' <a href="https://www.buenosaires.gob.ar/justiciayseguridad/infracciones">Sede Central de la Dirección General de Administración de Infracciones (DGAI)</a> ubicada en: ';
+					   $mensaje_web .= '<a href="https://mapa.buenosaires.gob.ar/comollego/?lat=-34.630348&lng=-58.370683&zl=15&modo=transporte&desde=Regimiento+De+Patricios+Av.+65&dir=Yrigoyen%2C+Hipolito+2346">';
+					   $mensaje_web .= 'Regimiento de Patricios 65</a>, de 8 a 19 hs, para resolver las infracciones de tránsito con un controlador de faltas. <br><br>';
+					   $mensaje_web .= 'Si necesitás más información ingresá a: <a href="https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial">';
+					   $mensaje_web .= 'resolver tus infracciones de tránsito.</a> </p>';
+					   $array->web = $mensaje_web;
 					   break;
 					//Medico
 					case 4:
@@ -385,6 +397,9 @@ class TramitesController extends Controller
 					   $mensaje = "*tu trámite se encuentra inhabilitado*." . "\n\n";
 					   $mensaje .= "Entrá a https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir para resolverlo.";
 					   $array->derivacion = $mensaje;
+					   $mensaje_web = '<p> Realizar el <a href="https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir">trámite de Reconsideración</a>, ';
+					   $mensaje_web .= 'para ser reevaluado en tu aptitud psicofísica una vez que hayan transcurrido 180 días desde la Inhabilitación. </p>';
+                                           $array->web = $mensaje_web;
 					   break;
 					case 3:
 					case 21:
@@ -397,12 +412,21 @@ class TramitesController extends Controller
 					   $mensaje .= "Para continuar, *mandá un mail a subgerenciaapfis@buenosaires.gob.ar* aclarando tu *nombre, apellido, número de documento y nacionalidad.*" . "\n\n";
 					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
 					   $array->derivacion = $mensaje;
+					   $mensaje_web = '<p><strong>Mandar un correo eléctronico</strong> a <a href="mailto:subgerenciaapfis@buenosaires.gob.ar" target="_blank;">subgerenciaapfis@buenosaires.gob.ar</a> aclarando tu';
+					   $mensaje_web .= '<ul><li><strong>Nombre y Apellido</strong></li> <li><strong>Número de documento</strong></li> <li><strong>Nacionalidad</strong></li>';
+					   $mensaje_web .= '</ul>Te responderemos en 72 horas hábiles.</p>';
+					   $array->web = $mensaje_web;
 					   break;
 					default:
 					   $mensaje = "tu trámite se encuentra inhabilitado." . "\n\n";
                                            $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
                                            $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
 					   $array->derivacion = $mensaje;
+					   $mensaje_web = '<p><strong>Mandar un correo eléctronico</strong> a';
+                                           $mensaje_web .= '  <a href="mailto:legalesdghc@buenosaires.gob.ar" target="_blank;">legalesdghc@buenosaires.gob.ar</a> aclarando tu <ul>';
+                                           $mensaje_web .= '<li><strong>Nombre y Apellido</strong></li> <li><strong>Número de documento</strong></li>';
+                                           $mensaje_web .= '</ul> Te responderemos en 72 horas hábiles.</p>';
+                                           $array->web = $mensaje_web;
 					   break;
 				}
 			});
