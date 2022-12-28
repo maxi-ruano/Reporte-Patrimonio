@@ -45,7 +45,7 @@
  <div class="form-group">
               <label class="control-label col-md-3 col-sm-3 col-xs-12"></label>
               <div class="col-md-6 col-sm-6 col-xs-12">
-                <button id="enviar" name="enviar" onClick="ajaxCall()" class="btn btn-primary btn-block">Buscar Boleta de Pago</button>
+                <button id="enviar" name="enviar" onClick="ajaxCall()" class="btn btn-primary btn-block">Buscar Charla</button>
               </div>
 <br>
 <br>
