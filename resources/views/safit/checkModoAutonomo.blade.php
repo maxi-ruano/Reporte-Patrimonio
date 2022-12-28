@@ -3,7 +3,7 @@
 
  <div class="wrapper-inner-tab-backgrounds-b">
     <div class="wrapper-inner-tab-backgrounds-first">
-        <a target="_blank" href="{{ url('checkPreCheck') }}"><div class="sim-button-b button30"><span>PRECHECK</span></div></a>
+        <a target="_blank" href="{{ url('buscarCharla') }}"><div class="sim-button-b button30"><span>Consultar CHARLA</span></div></a>
     </div>
 
     <div class="wrapper-inner-tab-backgrounds-second">
@@ -74,7 +74,7 @@ function bloquea(){
   }
 }
 </script>
- @include('safit.resultCheckModoAutonomo')
+ @include('safit.resultCheckSigeci')
 
 @endsection
 

@@ -79,8 +79,12 @@ Route::get('checkPreCheck', ['uses' => 'PreCheckController@checkPreCheck','as' =
 Route::get('consultarPreCheck', ['uses' => 'PreCheckController@consultarPreCheck','as' => 'consultarPreCheck']);
 Route::get('buscarTramitesPrecheck', ['uses' => 'PreCheckController@buscarTramitesPrecheck','as' => 'buscarTramitesPrecheck']);
 Route::get('testCheckBoletas', ['uses' => 'TramitesAInicarController@testCheckBoletas','as' => 'testCheckBoletas']);
+//Route::post('buscarCharlaPost', 'WsCharlaVirtualController@buscarCharlaPost');
+Route::get('buscarCharla', 'WsCharlaVirtualController@buscarCharla');
 Route::get('buscarBoletaPagoPersona', 'TramitesAInicarController@buscarBoletaPagoPersona');
 Route::post('buscarBoletaPagoPersona',['uses' => 'TramitesAInicarController@buscarBoletaPagoPersona','as' => 'buscarBoletaPagoPersona']);
+
+Route::post('buscarCharlaPost',['uses' => 'WsCharlaVirtualController@buscarCharlaPost','as' => 'buscarCharlaPost']);
 //END SAFIT
 
 Route::group(['prefix' => 'api'], function () {

@@ -5,7 +5,7 @@
  
  <div class="wrapper-inner-tab-backgrounds-b">
     <div class="wrapper-inner-tab-backgrounds-first">
-        <a target="_blank" href="{{ url('buscarBoletaPagoPersona') }}"><div class="sim-button-b button30"><span> Consultar CENAT </span></div></a>
+        <a target="_blank" href="{{ url('buscarCharla') }}"><div class="sim-button-b button30"><span> Consultar Charla </span></div></a>
     </div>
 
     <div class="wrapper-inner-tab-backgrounds-second">

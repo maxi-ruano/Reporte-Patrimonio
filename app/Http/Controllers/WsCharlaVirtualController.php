@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CharlaVirtual;
+use Http;
 
 class WsCharlaVirtualController extends Controller
 {
@@ -79,5 +80,41 @@ class WsCharlaVirtualController extends Controller
 	    }
 	 return $codigo;
     }
- 
+
+ 	public function buscarCharla(){
+
+	return view('charla.buscarCharla');
+
+	}
+
+
+
+	public function buscarCharlaPost()
+	{
+		$nro_doc = $_POST['nro_doc'];
+		$sexo = $_POST['sexo'];
+		$curl = curl_init();
+
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => 'https://transito.buenosaires.gob.ar/api-charlavirtual/v1/charlas/documento/'.$nro_doc.'/genero/'.$sexo.'',
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => '',
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => 'GET',
+			CURLOPT_HTTPHEADER => array(
+				'Cookie: BIGipServerPool_especiales-web=184685578.20480.0000'
+			),
+		));
+
+		$response = curl_exec($curl);
+
+		curl_close($curl);
+		//echo $response;
+
+		return response()->json($response);
+	}
+
 }
