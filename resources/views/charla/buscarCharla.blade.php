@@ -21,7 +21,7 @@
           <div class="clearfix"></div>
         </div>
       <div class="x_content">
-        <form id="formulario" method="POST" class="form-horizontal form-label-left">
+        <form onkeydown="return event.key != 'Enter';" id="formulario" method="POST" class="form-horizontal form-label-left">
             <div class="form-group" >
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Sexo<span class="required">*</span>
                 </label>
