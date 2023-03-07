@@ -359,9 +359,8 @@ class TramitesController extends Controller
 					case 55:
 					case 56:
 					case 98:
-					   $mensaje = 'tu trámite se encuentra inhabilitado.' . "\n\n";
-					   $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
-					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
+					   $mensaje = "*mandá un mail* a legalesdghc@buenosaires.gob.ar con tu nombre, apellido y número de documento. \n\n";
+					   $mensaje .= "En *3 días hábiles* el equipo te va a contar los *próximos pasos*.";
 					   $array->derivacion = $mensaje;
 					   $mensaje_web = '<p><strong>Mandar un correo eléctronico</strong> a';
 					   $mensaje_web .= '  <a href="mailto:legalesdghc@buenosaires.gob.ar" target="_blank;">legalesdghc@buenosaires.gob.ar</a> aclarando tu <ul>';
@@ -375,10 +374,8 @@ class TramitesController extends Controller
 					case 10:
 					case 51:
 					case 53:
-					   $mensaje = 'tu trámite se encuentra inhabilitado por un Controlador de la DGAI.'  . "\n\n";
-					   $mensaje .= "Para resolver tu situación, tenés que *presentarte personalmente en la Sede Central de la DGAI*." . "\n";
-					   $mensaje .= "Regimiento de Patricios N° 65, de 8 a 19 hs." . "\n\n";
-					   $mensaje .= "Para más información, entrá a https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial";
+					   $mensaje = "*acercate a la Sede Central de la DGAI* en Regimiento de Patricios 65, de 8 a 19h. \n\n";
+					   $mensaje .= "En nuestro sitio te cuento más: https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial";
 					   $array->derivacion = $mensaje;
 					   $mensaje_web = '<p>Presentarte personalmente en la';
 					   $mensaje_web .= ' <a href="https://www.buenosaires.gob.ar/justiciayseguridad/infracciones">Sede Central de la Dirección General de Administración de Infracciones (DGAI)</a> ubicada en: ';
@@ -394,8 +391,7 @@ class TramitesController extends Controller
 					case 13:
 					case 16:
 					case 54:
-					   $mensaje = "*tu trámite se encuentra inhabilitado*." . "\n\n";
-					   $mensaje .= "Entrá a https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir para resolverlo.";
+					   $mensaje = "*entrá a nuestro sitio*: https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir";
 					   $array->derivacion = $mensaje;
 					   $mensaje_web = '<p> Realizar el <a href="https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir">trámite de Reconsideración</a>, ';
 					   $mensaje_web .= 'para ser reevaluado en tu aptitud psicofísica una vez que hayan transcurrido 180 días desde la Inhabilitación. </p>';
@@ -408,9 +404,8 @@ class TramitesController extends Controller
 					case 43:
 					case 47:
 					case 48:
-					   $mensaje = "tu trámite se encuentra inhabilitado." . "\n\n";
-					   $mensaje .= "Para continuar, *mandá un mail a subgerenciaapfis@buenosaires.gob.ar* aclarando tu *nombre, apellido, número de documento y nacionalidad.*" . "\n\n";
-					   $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
+					   $mensaje = "*mandá un mail* a ✉️ subgerenciaapfis@buenosaires.gob.ar con tu nombre, apellido, número de documento y nacionalidad. \n\n ";
+					   $mensaje .= "En *3 días hábiles* el equipo te va a contar los *próximos pasos*.";
 					   $array->derivacion = $mensaje;
 					   $mensaje_web = '<p><strong>Mandar un correo eléctronico</strong> a <a href="mailto:subgerenciaapfis@buenosaires.gob.ar" target="_blank;">subgerenciaapfis@buenosaires.gob.ar</a> aclarando tu';
 					   $mensaje_web .= '<ul><li><strong>Nombre y Apellido</strong></li> <li><strong>Número de documento</strong></li> <li><strong>Nacionalidad</strong></li>';
@@ -418,9 +413,8 @@ class TramitesController extends Controller
 					   $array->web = $mensaje_web;
 					   break;
 					default:
-					   $mensaje = "tu trámite se encuentra inhabilitado." . "\n\n";
-                                           $mensaje .= "Para continuar, *mandá un mail a legalesdghc@buenosaires.gob.ar* aclarando tu *nombre, apellido y número de documento*." . "\n\n";
-                                           $mensaje .= "Alguien del equipo te va a responder en 72 horas hábiles.";
+					   $mensaje = "*mandá un mail* a legalesdghc@buenosaires.gob.ar con tu nombre, apellido y número de documento. \n\n";
+                                           $mensaje .= "En *3 días hábiles* el equipo te va a contar los *próximos pasos*.";
 					   $array->derivacion = $mensaje;
 					   $mensaje_web = '<p><strong>Mandar un correo eléctronico</strong> a';
                                            $mensaje_web .= '  <a href="mailto:legalesdghc@buenosaires.gob.ar" target="_blank;">legalesdghc@buenosaires.gob.ar</a> aclarando tu <ul>';
