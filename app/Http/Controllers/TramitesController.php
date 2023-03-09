@@ -270,10 +270,10 @@ class TramitesController extends Controller
 							if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date('Y-m-d')."+ 2 month"))){
 								$corresponde = 6; //reimpresion obligatoria pero licencia vigente
 							}else if ($fec_vencimiento_licencia >= $fecha_ini_op && $fec_vencimiento_licencia <= $fecha_fin_op){
-								if($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 22 month"))){
-									$corresponde = 2;
-								}else if ($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 36 month"))){
+								if($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 36 month"))){
 									$corresponde = 1;
+								}else if ($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 22 month"))){
+									$corresponde = 2;
 								}else{
 									$corresponde = 4; //esto es porque esta inhabilitado
 								}
