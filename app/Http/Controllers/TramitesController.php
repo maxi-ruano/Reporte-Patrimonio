@@ -367,6 +367,7 @@ class TramitesController extends Controller
 					   $mensaje_web .= '<li><strong>Nombre y Apellido</strong></li> <li><strong>Número de documento</strong></li>';
 					   $mensaje_web .= '</ul> Te responderemos en 72 horas hábiles.</p>';
 					   $array->web = $mensaje_web;
+					   $array->sector = 1;
 					   break;
 					//DGAI
 					case 2:
@@ -384,6 +385,7 @@ class TramitesController extends Controller
 					   $mensaje_web .= 'Si necesitás más información ingresá a: <a href="https://www.buenosaires.gob.ar/tramites/resolver-infracciones-de-transito-con-un-controlador-en-forma-presencial">';
 					   $mensaje_web .= 'resolver tus infracciones de tránsito.</a> </p>';
 					   $array->web = $mensaje_web;
+					   $array->sector = 4;
 					   break;
 					//Medico
 					case 4:
@@ -396,6 +398,7 @@ class TramitesController extends Controller
 					   $mensaje_web = '<p> Realizar el <a href="https://www.buenosaires.gob.ar/tramites/reconsideracion-para-licencia-de-conducir">trámite de Reconsideración</a>, ';
 					   $mensaje_web .= 'para ser reevaluado en tu aptitud psicofísica una vez que hayan transcurrido 180 días desde la Inhabilitación. </p>';
                                            $array->web = $mensaje_web;
+					   $array->sector = 2;
 					   break;
 					case 3:
 					case 21:
@@ -411,6 +414,7 @@ class TramitesController extends Controller
 					   $mensaje_web .= '<ul><li><strong>Nombre y Apellido</strong></li> <li><strong>Número de documento</strong></li> <li><strong>Nacionalidad</strong></li>';
 					   $mensaje_web .= '</ul>Te responderemos en 72 horas hábiles.</p>';
 					   $array->web = $mensaje_web;
+					   $array->sector = 3;
 					   break;
 					default:
 					   $mensaje = "*mandá un mail* a legalesdghc@buenosaires.gob.ar con tu nombre, apellido y número de documento. \n\n";
@@ -421,6 +425,7 @@ class TramitesController extends Controller
                                            $mensaje_web .= '<li><strong>Nombre y Apellido</strong></li> <li><strong>Número de documento</strong></li>';
                                            $mensaje_web .= '</ul> Te responderemos en 72 horas hábiles.</p>';
                                            $array->web = $mensaje_web;
+					   $array->sector = 1;
 					   break;
 				}
 			});
