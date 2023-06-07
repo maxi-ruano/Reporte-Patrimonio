@@ -3,7 +3,7 @@
   <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">
-        <h2>Datos Tramite <small></small></h2>
+        <h2>Datos Tramite Copia prueba<small></small></h2>
         <ul class="nav navbar-right panel_toolbox">
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
           </li>
@@ -44,9 +44,6 @@
             </li>
           </ul>
         </div>
-        <div id="logTurno">
-          
-        </div>
         <div class="clearfix"></div>
       </div>
     </div>
@@ -54,7 +51,7 @@
   <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">
-        <h2>Log de Pre-Check-Prueba <small></small></h2>
+        <h2>Log de Pre-Check <small></small></h2>
         <ul class="nav navbar-right panel_toolbox">
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
           </li>
@@ -68,6 +65,8 @@
           </ul>
       </div>
     </div>
+  </div>
+ <div id="logTurno" class="col-md-4 col-md-offset-3">
   </div>
 </div>
 
@@ -154,7 +153,7 @@
     var type = 'danger';
     var info = '';
     var verificado = false;
-    var precheck_libredeuda = true;
+    var precheck_libredeuda = false;
 
     var date = new Date().toISOString().slice(0,10); ;
     var updated = new Date(precheck.updated_at).toISOString().slice(0,10);
@@ -324,8 +323,8 @@
             $('#logTurno').append("(*) <span class='red'> Debe verificar "+precheck.description+" </span> <br>");
 	    $("#btn_precheck_"+precheck.validation_id).click();
           }  
-  }
-  }
+        }
+      }
 
       return verificado;
   }
@@ -383,7 +382,7 @@
     });
   }
   
- function getPaseTurno(id){
+  function getPaseTurno(id){
     $.ajax({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         type: "GET",

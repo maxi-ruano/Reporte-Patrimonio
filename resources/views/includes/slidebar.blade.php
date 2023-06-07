@@ -4,46 +4,45 @@
     <h3>Menú</h3>
     <ul class="nav side-menu">
       @if(Auth::check())
-        @if(Auth::user()->can('view_all_tramites_habilitados') || Auth::user()->can('view_self_tramites_habilitados') || Auth::user()->can('view_sede_tramites_habilitados'))
+       @if(Auth::user()->can('view_all_tramites_habilitados') || Auth::user()->can('view_self_tramites_habilitados') || Auth::user()->can('view_sede_tramites_habilitados'))
           <li><a href="{{ route('tramitesHabilitados.index') }}?fecha={{date('Y-m-d')}}">
             <i class="fa fa-street-view"></i> Tramites Habilitados
             <span class="fa fa-chevron-right"></span></a>
           </li>
-        @else
-          @can('add_tramites_habilitados')
-            <li><a href="{{ route('tramitesHabilitados.create') }}">
+       @else
+        @can('add_tramites_habilitados')
+           <li><a href="{{ route('tramitesHabilitados.create') }}">
               <i class="fa fa-street-view"></i> Tramites Habilitados
-              <span class="fa fa-chevron-right"></span></a>
-            </li>
+             <span class="fa fa-chevron-right"></span></a>
+           </li>
           @endcan
         @endif
-
+         @endif
         @can('view_tramites_habilitados_motivos')
         <li><a href="{{ route('tramitesHabilitadosMotivos.index') }}">
           <i class="fa fa-list"></i> Motivos
           <span class="fa fa-chevron-right"></span></a>
         </li>
-        @endcan
+       @endcan
        
         @if(Auth::user()->can('anular_comprobantes_precheck') || Auth::user()->can('anular_examen_teorico') || Auth::user()->can('cambiar_pcs_examen_teorico'))
         <li><a href="{{ route('precheck.index') }}">
-          <i class="fa fa-edit"></i> Modificaciones del Sistema
+         <i class="fa fa-edit"></i> Modificaciones del Sistema
           <span class="fa fa-chevron-right"></span></a>
         </li>
-        @endif
+       @endif
 
-        @can('view_users')
+        
+    @can('view_users')
         <li><a href="{{ route('users.index') }}">
             <i class="fa fa-users"></i> Usuarios
             <span class="fa fa-chevron-right"></span></a>
         </li>
-        @endcan
-
-      @endif
-
-      @if(session('usuario_rol_id') == '40' || session('usuario_rol') == 'ROL_ESCUELA' || session('usuario_rol') == 'ROL_ADMIN'
+       @endcan
+       
+       @if(session('usuario_rol_id') == '40' || session('usuario_rol') == 'ROL_ESCUELA' || session('usuario_rol') == 'ROL_ADMIN'
 	|| session('usuario_id') == '2722' || session('usuario_id') == '2790' || session('usuario_id') == '2432')
-      <li><a href="{{ route('bedel.index') }}">
+     <li><a href="{{ route('bedel.index') }}">
         <i class="fa fa-users"></i> Bedel
         <span class="fa fa-chevron-down"></span></a>
       </li>
@@ -53,17 +52,18 @@
         <a href="{{ route('disposiciones.index') }}">
           <i class="fa fa-file"></i> Disposiciones
           <span class="fa fa-chevron-down"></span>
-        </a>
+       </a>
       </li>
       @endif
       @if( session('usuario_rol') == 'ROL_ADMIN' || session('usuario_rol') == 'ROL_REPORTES_CONTROL_INSUMOS')
       <li>
         <a href="{{ route('reporteSecuenciaInsumos') }}">
-          <i class="fa fa-file"></i> Reporte Secuencia Insumos
+         <i class="fa fa-file"></i> Reporte Secuencia Insumos
           <span class="fa fa-chevron-down"></span>
         </a>
       </li>
       @endif
+     
       @if( session('usuario_rol') == 'ROL_ADMIN' || session('usuario_rol') == 'ROL_REPORTES_CONTROL_INSUMOS')
       <li>
         <a href="{{ route('reporteControlInsumos') }}">
@@ -72,6 +72,14 @@
         </a>
       </li>
       @endif
+       
+      <li>
+        <a href="{{ route('reporteControlInsumos2') }}">
+          <i class="fa fa-file"></i> Reporte Control de Insumos
+          <span class="fa fa-chevron-down"></span>
+        </a>
+      </li>
+      
     </ul>
   </div>
 
@@ -92,3 +100,7 @@
   </a>
 </div>
 <!-- /menu footer buttons -->
+
+
+
+

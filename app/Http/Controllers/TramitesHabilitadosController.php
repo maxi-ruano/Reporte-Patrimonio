@@ -388,17 +388,11 @@ class TramitesHabilitadosController extends Controller
 
       foreach ($data as $tramite) {
 
+          \Log::info("Tramite numero: " . $tramite['numeroTramite']);
 
+	   $fecha_nacimiento = $tramite['datosFormulario']['fecha_nacimiento']['valor'];
 
-	
-	  //controlo que exista la fecha de nacimiento
-	   if (isset($tramite['datosFormulario']['fecha_nacimiento']['valor'])){
-
-		 $fecha_nacimiento = $tramite['datosFormulario']['fecha_nacimiento']['valor'];
-	   }else{
-		continue;
-           }
-	  /*  Estas líneas se usan para determinar si existe el codigo pais y si corresponde al valor que necesitamos
+	   /*  Estas líneas se usan para determinar si existe el codigo pais y si corresponde al valor que necesitamos
 	   if(isset($tramite['datosFormulario']['codigo_pais']['valor'])){   
 	   	$pais = $tramite['datosFormulario']['codigo_pais']['valor'];
 	   }else{
@@ -406,35 +400,42 @@ class TramitesHabilitadosController extends Controller
 	   }*/
 
            $pais = $tramite['datosFormulario']['nacionalidad']['valor'];
-	   
-	   
 
+	   if ($pais === 'ARG'){ $pais = 'Argentina';}
 	  //if (strlen($pais)>3) continue;	//Esta línea es para el codigo pais
-
-
-
             $request = new Request();
 
             $request->fecha = date('Y-m-d');
             $request->nombre = $tramite['nombreCiudadano'];
             $request->apellido = $tramite['apellidoCiudadano'];
-            
+
             $request->nro_doc = $tramite['numeroDocumentoCiudadano'];
             $request->sexo = $tramite['generoCiudadano'];
             $request->fecha_nacimiento = implode('-',array_reverse(explode("/",$fecha_nacimiento)));
             // Usuario tramites a distancia
             $request->user_id = '318';
             //$request->user_id = '261';
-            // Sucursal de reimpresiones
+            /*// Sucursal de reimpresiones
             $request->sucursal= '180';
             // Motivo tramite: reimpresiones
-            $request->motivo_id = 29;
+            $request->motivo_id = 29;*/
+            switch ($ws_metodo) {
+                case 'Duplicadolicencias':
+                    $request->sucursal= '150';
+                    $request->motivo_id = 12;
+                    break;
+                case 'ReimpresiondeCredenciales':
+                    $request->sucursal= '180';
+                    $request->motivo_id = 29;
+                    break;
+            }
+
 	    $request->std_solicitud_id = $tramite['numeroTramite'];
 
             /*
                 En BD existe tres tipos de nacionaonalidades argentinas:
                 Opcional: id_dgevyl=83, naturalizado: id_dgevyl=75 y de nacimiento: id_dgevyl= 1
-                 
+
             */
             if ($pais === 'Argentina') {
                 $request->pais = '1';
@@ -449,10 +450,10 @@ class TramitesHabilitadosController extends Controller
 
             }elseif( (trim($tramite['tipoDocumentoCiudadano']) === 'DE') || (trim($tramite['tipoDocumentoCiudadano']) === 'CRP' ) ){
                 $request->tipo_doc = '1';
-            
-		}elseif($tramite['tipoDocumentoCiudadano'] === 'PAS'){
+
+	    }elseif($tramite['tipoDocumentoCiudadano'] === 'PAS'){
                 $request->tipo_doc = '4';
-            	}
+            }
 
             //Si retorna true, cambia el estado del esquema en al tabla std_solicitudes y del lado de STD   
             if($this->store($request)){
@@ -814,7 +815,7 @@ class TramitesHabilitadosController extends Controller
         
         $tramite = str_replace("/","",$numTramiteStd);
         $array = $this->transicionEstadoEsquema($token,$tramite,json_encode($data));
-
+	$array = [];
 
         if (array_key_exists('idError', $array) || array_key_exists('message', $array)){
             \Log::warning('['.date('h:i:s').'] '." Error en el tramite numero: $numTramiteStd. Error WS Detalle, message: {$array['message']}.");

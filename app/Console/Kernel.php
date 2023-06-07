@@ -31,31 +31,37 @@ class Kernel extends ConsoleKernel
         //$schedule->call('App\Http\Controllers\MicroservicioController@revisarValidaciones')->weekdays()->at('16:55');
 
         //PRECHECK SIGECI
-        $schedule->call('App\Http\Controllers\MicroservicioController@completarTurnosEnTramitesAIniciar')->weekdays()->at('18:45'); //Turnos
+        $schedule->call('App\Http\Controllers\MicroservicioController@completarTurnosEnTramitesAIniciar')->weekdays()->at('11:26'); //Turnos
         $schedule->call('App\Http\Controllers\MicroservicioController@completarTurnosEnTramitesAIniciar')->saturdays()->at('08:40'); //Turnos
 
-        $schedule->call('App\Http\Controllers\MicroservicioController@verificarLibreDeudaDeTramites')->weekdays()->at('19:15'); //Libre Deuda
+        $schedule->call('App\Http\Controllers\MicroservicioController@verificarLibreDeudaDeTramites')->weekdays()->at('11:30'); //Libre Deuda
         $schedule->call('App\Http\Controllers\MicroservicioController@verificarLibreDeudaDeTramites')->saturdays()->at('09:15'); //Libre Deuda
 
-        $schedule->call('App\Http\Controllers\MicroservicioController@verificarBuiTramites')->weekdays()->at('19:20'); //Bui
+        $schedule->call('App\Http\Controllers\MicroservicioController@verificarBuiTramites')->weekdays()->at('11:31'); //Bui
         $schedule->call('App\Http\Controllers\MicroservicioController@verificarBuiTramites')->saturdays()->at('09:20'); //Bui
 
-        $schedule->call('App\Http\Controllers\MicroservicioController@completarBoletasEnTramitesAIniciar')->weekdays()->at('19:10'); //Buscar Boleta Cenat
+        $schedule->call('App\Http\Controllers\MicroservicioController@completarBoletasEnTramitesAIniciar')->weekdays()->at('11:13'); //Buscar Boleta Cenat
         $schedule->call('App\Http\Controllers\MicroservicioController@completarBoletasEnTramitesAIniciar')->saturdays()->at('09:10'); //Buscar Boleta Cenat
 
-        $schedule->call('App\Http\Controllers\MicroservicioController@emitirBoletasVirtualPago')->weekdays()->at('19:30'); //Obtener Certificado Virtual Cenat
+        $schedule->call('App\Http\Controllers\MicroservicioController@emitirBoletasVirtualPago')->weekdays()->at('11:20'); //Obtener Certificado Virtual Cenat
         $schedule->call('App\Http\Controllers\MicroservicioController@emitirBoletasVirtualPago')->saturdays()->at('09:30'); //Obtener Certificado Virtual Cenat
-        //Revisar validaciones completas e iniciar en Sinalic
-	    $schedule->call('App\Http\Controllers\MicroservicioController@revisarValidaciones')->weekdays()->at('20:00'); //Validaciones Completas
-	    $schedule->call('App\Http\Controllers\MicroservicioController@revisarValidaciones')->saturdays()->at('10:00'); //Validaciones Completas
+
+	$schedule->call('App\Http\Controllers\MicroservicioController@verificarCharlaTramites')->weekdays()->at('11:32'); //Charla
+        $schedule->call('App\Http\Controllers\MicroservicioController@verificarCharlaTramites')->saturdays()->at('12:00'); //Charla
+
+	//Revisar validaciones completas e iniciar en Sinalic
+	$schedule->call('App\Http\Controllers\MicroservicioController@revisarValidaciones')->weekdays()->at('20:00'); //Validaciones Completas
+	$schedule->call('App\Http\Controllers\MicroservicioController@revisarValidaciones')->saturdays()->at('10:00'); //Validaciones Completas
 
         $schedule->call('App\Http\Controllers\MicroservicioController@enviarTramitesASinalic')->weekdays()->at('20:10'); //Turnos a Enviar a Sinalic
         $schedule->call('App\Http\Controllers\MicroservicioController@enviarTramitesASinalic')->saturdays()->at('10:10'); //Turnos a Enviar a Sinalic
-        
+
         //PRECHECK STD
        $schedule->call('App\Http\Controllers\MicroservicioController@tramitesReimpresionStd')->weekdays()->at('07:51'); //Integración STD reimpresiones
        $schedule->call('App\Http\Controllers\MicroservicioController@tramitesReimpresionStd')->weekdays()->at('15:30'); //Integración STD reimpresiones
        $schedule->call('App\Http\Controllers\MicroservicioController@tramitesReimpresionStd')->saturdays()->at('11:30'); //Integración STD reimpresiones
+
+       $schedule->call('App\Http\Controllers\MicroservicioController@tramitesDuplicadosStd')->weekdays()->at('09:11'); //Integración STD duplicados
 
        //$schedule->call('App\Http\Controllers\MicroservicioController@enviarTramitesASinalic')->saturdays()->at('10:49'); //Turnos a Enviar a Sinalic
         //FIN PRECHECK

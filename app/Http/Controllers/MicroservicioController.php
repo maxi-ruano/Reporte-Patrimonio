@@ -70,7 +70,7 @@ class MicroservicioController extends Controller
      $ws_fecDes =  date('Y-m-d', mktime(0,0,0,date('m'),date('d')-1,date('Y')));
      $ws_fecHas =  date('Y-m-d');
 
-      
+
      $ws_fecDes = '2022-07-27';
      $ws_fecHas = '2022-07-27';
 
@@ -81,7 +81,6 @@ class MicroservicioController extends Controller
       $ws_metodo = 'ReimpresiondeCredenciales';
 
       $tramitesHabilitadosController->tramitesReimpresionStd($ws_fecDes,$ws_fecHas,$ws_estado,$ws_esquema,$ws_metodo);
-    
     }
 
     public function reimpresionesLicenciaEmitida()
@@ -93,6 +92,32 @@ class MicroservicioController extends Controller
 
     }
 
+    public function tramitesDuplicadosStd(){
+      \Log::info('['.date('h:i:s').'] '.'se inicio: tramitesDuplicadosStd()');
+      $tramitesHabilitadosController = new TramitesHabilitadosController();
+
+     $ws_fecDes =  date('Y-m-d', mktime(0,0,0,date('m'),date('d')-1,date('Y')));
+     $ws_fecHas =  date('Y-m-d');
+
+
+     $ws_fecDes = '2022-07-27';
+     $ws_fecHas = '2023-07-27';
+
+
+      $ws_estado = 'Abierto';
+      $ws_esquema = 'Verificada';
+      $ws_metodo = 'Duplicadolicencias';
+
+      $tramitesHabilitadosController->tramitesReimpresionStd($ws_fecDes,$ws_fecHas,$ws_estado,$ws_esquema,$ws_metodo);
+      \Log::info('['.date('h:i:s').'] '.'finalizó: tramitesDuplicadosStd()');
+    }
+
+    public function verificarCharlaTramites(){
+      \Log::info('['.date('h:i:s').'] '.'se inicio: verificarCharlaTramites()');
+      $tramitesAIniciar = new TramitesAInicarController();
+      $tramitesAIniciar->verificarCharlaDeTramites( INICIO, CHARLA_VIRTUAL, VALIDACIONES);
+      \Log::info('['.date('h:i:s').'] '.'finalizo: verificarCharlaTramites()');
+    }
 
     public function run(){
       ini_set('default_socket_timeout', 600);

@@ -91,3 +91,12 @@ Route::group(['prefix' => 'api'], function () {
   Route::get('aviso_pago', 'SoapServerController@index')->name('aviso_pago');
   Route::post('aviso_pago', 'SoapServerController@index')->name('aviso_pago');
 });
+
+
+
+
+
+//LOTES
+
+Route::get('reporteControlInsumos2',['uses' => 'ReportesController2@reporteControlInsumos2','as' => 'reporteControlInsumos2']);
+

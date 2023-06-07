@@ -1386,4 +1386,20 @@ class TramitesAInicarController extends Controller
 	  return $prorroga;
   }
 
+  //Generar charla
+  /**
+  * MicroservicioController: 1) Metodos asociados para verificarCharlaDeTramites
+  */
+  public function verificarCharlaDeTramites($estadoActual, $estadoValidacion, $siguienteEstado){
+    $tramites = $this->getTramitesAIniciarValidaciones($estadoActual, $estadoValidacion, $this->fecha_inicio, $this->fecha_fin);
+    foreach ($tramites as $key => $tramite) {
+      try{
+        $this->getCharlaVirtual($tramite, $estadoValidacion);
+      }catch(\Exception $e){
+        $array = array('error' => $e->getMessage(), 'request' => "",'response' => "");
+        $this->guardarError((object)$array, $siguienteEstado, $tramite->id);
+      }
+    }
+  }
+
 }

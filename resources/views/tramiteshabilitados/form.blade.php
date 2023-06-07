@@ -224,6 +224,9 @@
 		    case 'REIMPRESION':
 			validarReimpresion();
 			break;
+		    case 'DUPLICADO':
+			$('#std_solicitud_id').attr('required','required');
+			$("#std_solicitud_id").attr('disabled',false);
                     default:
                         //
                 }
