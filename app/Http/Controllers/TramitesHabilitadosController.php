@@ -835,7 +835,7 @@ class TramitesHabilitadosController extends Controller
         }   
     }
 
-    public function reimpresionesLicenciaEmitida()
+    public function stdLicenciaEmitida($metodo,$tipo_tramite_dgevyl)
     {
         $startDate = Carbon::today();
         $endDate = $startDate->copy()->endOfDay();
@@ -847,10 +847,10 @@ class TramitesHabilitadosController extends Controller
 	$expiration_time_copy = $expiration_time->copy()->subMinute();
 
 	$fecDes = '2022-01-01';
-	$metodo = 'ReimpresiondeCredenciales';
+	//$metodo = 'ReimpresiondeCredenciales';
 	$token = $this->obtenerTokenStd();
 
-        $tipo_id_reimpresion = 1030;
+        //$tipo_id_reimpresion = 1030;
         $estado_completado = 14;
 
         $tramites =  Tramites::
@@ -858,15 +858,16 @@ class TramitesHabilitadosController extends Controller
 			->join('std_solicitudes','std_solicitudes.numero_tramite','tramites_a_iniciar.std_solicitud_id')
                         ->where('tramites.estado',$estado_completado)
                         ->whereBetween('modification_date',[$startDate,$endDate])
-                        ->where('tipo_tramite_id',$tipo_id_reimpresion)
+                        ->where('tipo_tramite_id',$tipo_tramite_dgevyl)
 			->whereNotNull('std_solicitud_id')
                         ->where('estado_esquema','!=','Licencia Emitida')
+                        ->whereNotIn('tramites.nro_doc',['18840694']) //Por si se corta la integración por una solicitud que tiene disparidad de estados
                         ->get();
 
 
 
         foreach($tramites as $tramite){
-            
+
 	    $tramite_id = $tramite->std_solicitud_id;
 
 	   if(Carbon::now() >= $expiration_time || Carbon::now() >= $expiration_time_copy){
@@ -891,7 +892,7 @@ class TramitesHabilitadosController extends Controller
         $para = "fechaDesde=".$fecDes."&numeroTramite=".$numTramite;
 
         $curl = curl_init();
-        
+
 	//
         curl_setopt_array($curl, array(
                 CURLOPT_URL => env('URL_CONSULTA_STD').$metodo."?".$para,

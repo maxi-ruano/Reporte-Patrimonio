@@ -85,9 +85,12 @@ class MicroservicioController extends Controller
 
     public function reimpresionesLicenciaEmitida()
     {
+      $metodo = 'ReimpresiondeCredenciales';
+      $tipo_tramite_dgevyl = 1030;
+
       \Log::info('['.date('h:i:s').'] '.'se inicio: reimpresionesLicenciaEmitida()');
       $tramitesHabilitadosController = new TramitesHabilitadosController();
-      $tramitesHabilitadosController->reimpresionesLicenciaEmitida(); 
+      $tramitesHabilitadosController->stdLicenciaEmitida($metodo,$tipo_tramite_dgevyl);
       \Log::info('['.date('h:i:s').'] '.'finalizo: reimpresionesLicenciaEmitida()');
 
     }
@@ -110,6 +113,18 @@ class MicroservicioController extends Controller
 
       $tramitesHabilitadosController->tramitesReimpresionStd($ws_fecDes,$ws_fecHas,$ws_estado,$ws_esquema,$ws_metodo);
       \Log::info('['.date('h:i:s').'] '.'finalizó: tramitesDuplicadosStd()');
+    }
+
+    public function duplicadoLicenciaEmitida()
+    {
+      $metodo = 'Duplicadolicencias';
+      $tipo_tramite_dgevyl = 1029;
+
+      \Log::info('['.date('h:i:s').'] '.'se inicio: reimpresionesLicenciaEmitida()');
+      $tramitesHabilitadosController = new TramitesHabilitadosController();
+      $tramitesHabilitadosController->stdLicenciaEmitida($metodo,$tipo_tramite_dgevyl);
+      \Log::info('['.date('h:i:s').'] '.'finalizo: reimpresionesLicenciaEmitida()');
+
     }
 
     public function verificarCharlaTramites(){

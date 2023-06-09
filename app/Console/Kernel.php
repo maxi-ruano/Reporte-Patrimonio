@@ -66,10 +66,14 @@ class Kernel extends ConsoleKernel
        //$schedule->call('App\Http\Controllers\MicroservicioController@enviarTramitesASinalic')->saturdays()->at('10:49'); //Turnos a Enviar a Sinalic
         //FIN PRECHECK
 
-	//Reimpresiones -> licencia emitida
+	//Reimpresiones & Duplicado -> licencia emitida
         //$schedule->call('App\Http\Controllers\MicroservicioController@reimpresionesLicenciaEmitida')->weekdays()->at('06:30');
         $schedule->call('App\Http\Controllers\MicroservicioController@reimpresionesLicenciaEmitida')->weekdays()->at('20:00');
         $schedule->call('App\Http\Controllers\MicroservicioController@reimpresionesLicenciaEmitida')->saturdays()->at('13:30');
+
+        $schedule->call('App\Http\Controllers\MicroservicioController@duplicadoLicenciaEmitida')->weekdays()->at('20:00');
+        $schedule->call('App\Http\Controllers\MicroservicioController@duplicadoLicenciaEmitida')->saturdays()->at('13:30');
+
     }
 
     /**
