@@ -72,14 +72,15 @@
         </a>
       </li>
       @endif
-       
+
+     @can('view_insumos')
       <li>
-        <a href="{{ route('reporteControlInsumos2') }}">
-          <i class="fa fa-file"></i> Reporte Control de Insumos
+        <a href="{{ route('reporteControlInsumos') }}">
+          <i class="fa fa-file"></i> Reporte Control de Insumos  (Lotes) 
           <span class="fa fa-chevron-down"></span>
         </a>
       </li>
-      
+     @endcan
     </ul>
   </div>
 

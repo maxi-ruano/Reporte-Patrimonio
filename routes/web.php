@@ -49,6 +49,10 @@ Route::group( ['middleware' => ['auth']], function() {
   Route::get('listado_examenes','EtlExamenController@getExamenes')->name('getExamenes');
   Route::get('anular_examen','EtlExamenController@anular')->name('anular');
 
+  //LOTES
+  Route::get('reporteControlInsumos',['uses' => 'ReportesController2@reporteControlInsumos','as' => 'reporteControlInsumos']);
+  Route::get('/reporte/control-insumos', 'ReportesController2@reporteControlInsumos')->name('reporte.control.insumos');
+  Route::get('/exportar-insumos', 'ReportesController2@exportarExcel')->name('exportar.insumos');
 });
 
 //DASHBOARD
@@ -92,11 +96,4 @@ Route::group(['prefix' => 'api'], function () {
   Route::post('aviso_pago', 'SoapServerController@index')->name('aviso_pago');
 });
 
-
-
-
-
-//LOTES
-
-Route::get('reporteControlInsumos2',['uses' => 'ReportesController2@reporteControlInsumos2','as' => 'reporteControlInsumos2']);
 
