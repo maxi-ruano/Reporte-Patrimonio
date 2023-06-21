@@ -781,6 +781,7 @@ class TramitesHabilitadosController extends Controller
         return $this->obtenerDatosStd($token,$ws_fecDes,$ws_fecHas,$ws_estado,$ws_esquema,$ws_metodo);
 
     }
+
     private function transicionEstadoEsquema($token, $tramite, $data)
     {
         $curl = curl_init();
@@ -805,6 +806,7 @@ class TramitesHabilitadosController extends Controller
         curl_close($curl);
         return $array;
     }
+
     private function cambioEstadoDeEsquema($numTramiteStd,$estado_a_enviar,$idmotivo='',$observaciones='')
     {
         $token = $this->obtenerTokenStd();
@@ -825,7 +827,7 @@ class TramitesHabilitadosController extends Controller
                 \DB::table('std_solicitudes')
                 ->where('numero_tramite',$numTramiteStd)
                 ->update(['estado_esquema'=>$estado_a_enviar]);    
-            
+
                 \Log::info("Cambio de esquema, realizado con exito para el tramite de STD: $numTramiteStd, al estado de esquema: $estado_a_enviar");  
                 return true;
 

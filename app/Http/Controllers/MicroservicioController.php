@@ -120,10 +120,10 @@ class MicroservicioController extends Controller
       $metodo = 'Duplicadolicencias';
       $tipo_tramite_dgevyl = 1029;
 
-      \Log::info('['.date('h:i:s').'] '.'se inicio: reimpresionesLicenciaEmitida()');
+      \Log::info('['.date('h:i:s').'] '.'se inicio: duplicadoLicenciaEmitida()');
       $tramitesHabilitadosController = new TramitesHabilitadosController();
       $tramitesHabilitadosController->stdLicenciaEmitida($metodo,$tipo_tramite_dgevyl);
-      \Log::info('['.date('h:i:s').'] '.'finalizo: reimpresionesLicenciaEmitida()');
+      \Log::info('['.date('h:i:s').'] '.'finalizo: duplicadoLicenciaEmitida()');
 
     }
 
