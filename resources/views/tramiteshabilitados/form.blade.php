@@ -313,14 +313,14 @@
                                     $("#ultimo_turno").append('<h4 class="red"> <i class="fa fa-user-times" style="font-size:30px;"></i> El número de cita ingresado ya cuenta con un tramite en LICTA: '+ret.tramite_dgevyl_id+'</h4>');
                                 }else{
                                    // if(sucursal == ret.sucroca){
-                                        if(dias >= 0 && dias <= 15){
+                                        if(dias == 0 /*&& dias <= 15*/){
                                             $("#ultimo_turno .icono").html('<i class="fa fa-check-circle" style="font-size:26px;color:green"></i>');
                                             $('button[type=submit]').attr("disabled",false);
                                             $("#precheck_id").val(precheck_id);
                                             $("#ultimo_turno").append('<h4 class="green"> <i class="fa fa-user-circle" style="font-size:30px;"></i> Usted certifica que los datos del TURNO son incorrectos!.</h4>');
                                         }else{
                                             $("#ultimo_turno .icono").html('<i class="fa fa-times-circle" style="font-size:26px;color:red"></i>');
-                                            $("#ultimo_turno").append('<h4 class="red"> <i class="fa fa-user-times" style="font-size:30px;"></i> El turno no cumple con los 15 días correspondientes para poder TOMAR TURNO!.</h4>');
+                                            $("#ultimo_turno").append('<h4 class="red"> <i class="fa fa-user-times" style="font-size:30px;"></i> El turno ingresado no es del día.</h4>');
                                         }
                                    /* }else{
                                         $("#ultimo_turno .icono").html('<i class="fa fa-times-circle" style="font-size:26px;color:red"></i>');
