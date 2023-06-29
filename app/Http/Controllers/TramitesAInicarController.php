@@ -1276,7 +1276,7 @@ class TramitesAInicarController extends Controller
 
 //                               ->whereRaw("sigeci.fecha > '".$hoy."' OR tramites_habilitados.fecha > '".$hoy."' ");
 
-->whereRaw("sigeci.fecha::DATE > '".$hoy."' OR tramites_habilitados.fecha::DATE > '".$hoy."' OR (tramites_habilitados.fecha::DATE >= '2021-11-25' AND tramites_habilitados.motivo_id = '29') ");
+->whereRaw("sigeci.fecha::DATE > '".$hoy."' OR tramites_habilitados.fecha::DATE > '".$hoy."' OR (tramites_habilitados.fecha::DATE >= '2021-11-25' AND tramites_habilitados.motivo_id = '29') OR (tramites_habilitados.fecha::DATE >= '2023-06-28' AND tramites_habilitados.motivo_id = '12')");
 
                                   })
                                   ->update(['estado' => TURNO_VENCIDO]);
