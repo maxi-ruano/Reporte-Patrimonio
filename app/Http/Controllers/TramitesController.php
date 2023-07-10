@@ -244,47 +244,65 @@ class TramitesController extends Controller
 				}
 
 			}else{
+				if($ultimo_tramite->tipo_tramite_id == 1030){
+					if($fec_emision_licencia <= '2021-01-22'){
+						if  ( $fec_vencimiento_licencia >= date("Y-m-d",strtotime(date('Y-m-d')."- 24 month"))) { //le doy dos años uno de prorroga y uno de gracia para renovar
+				                        $corresponde = 2;
+                				}else{
+				                 	//Si se paso del año de gracia de renovación
+                        				$corresponde = 1;
+                				}
+					}elseif($fec_emision_licencia > '2021-01-22'){ //aca me dieron 2 años de prorroga a partir de mi fecha original
+						 if  ( $fec_vencimiento_licencia >= date("Y-m-d",strtotime(date('Y-m-d')."- 12 month"))) { // le doy solo el año de gracia para renovar
+				                        $corresponde = 2;
+                 				}else{
 
-				if($fec_emision_licencia >= $fecha_emi){ //despues de decreto
-                                        if($fec_vencimiento_licencia < date("Y-m-d",strtotime(date('Y-m-d')."-12 month"))){
-                                                $corresponde = 1;
-                                        }else{
-                                                if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date('Y-m-d')."+ 2 month"))){
-                                                                $corresponde = 5;
-						}else{
-								$corresponde = 2;
-						}
-                                        }
-
-                                }else{ //antes del decreto
-                                        if($fec_vencimiento_licencia >= $fecha_fin_ob){ //si venció después del decreto, reimpresiones obligatorias
-                                                if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date("Y-m-d")."-12 month"))){
-							$corresponde = 1;
-                                                }else{
-                                                        $corresponde = 2;
-                                                }
-                                        }else if ($fec_vencimiento_licencia <= $fecha_ini_op){ //venció antes del decreto, reimpresiones opcionales
-                                                $corresponde = 1;
-                                        }else{
-						if($fec_vencimiento_licencia >= $fecha_ini_op && $fec_vencimiento_licencia <= $fecha_fin_ob){
-							if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date('Y-m-d')."+ 2 month"))){
-								$corresponde = 6; //reimpresion obligatoria pero licencia vigente
-							}else if ($fec_vencimiento_licencia >= $fecha_ini_op && $fec_vencimiento_licencia <= $fecha_fin_op){
-								if($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 36 month"))){
-									$corresponde = 1;
-								}else if ($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 22 month"))){
-									$corresponde = 2;
-								}else{
-									$corresponde = 4; //esto es porque esta inhabilitado
-								}
-							}else if (($fec_vencimiento_licencia >= $fecha_ini_ob && $fec_vencimiento_licencia <= $fecha_fin_ob) && $fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."-12 month"))){
-								$corresponde = 1;
+				                        //Si se paso del año de gracia de la renovación
+				                        $corresponde = 1;
+                 				}
+					}
+				}else{
+					if($fec_emision_licencia >= $fecha_emi){ //despues de decreto
+        	                                if($fec_vencimiento_licencia < date("Y-m-d",strtotime(date('Y-m-d')."-12 month"))){
+                	                                $corresponde = 1;
+                        	                }else{
+                                	                if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date('Y-m-d')."+ 2 month"))){
+                                        	                        $corresponde = 5;
 							}else{
-								$corresponde = 3; //esto es porque esta inhabilitado
+									$corresponde = 2;
+							}
+                                        	}
+
+                                	}else{ //antes del decreto
+                                        	if($fec_vencimiento_licencia >= $fecha_fin_ob){ //si venció después del decreto, reimpresiones obligatorias
+                                                	if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date("Y-m-d")."-12 month"))){
+								$corresponde = 1;
+	                                                }else{
+        	                                                $corresponde = 2;
+                	                                }
+                        	                }else if ($fec_vencimiento_licencia <= $fecha_ini_op){ //venció antes del decreto, reimpresiones opcionales
+                                	                $corresponde = 1;
+                                        	}else{
+							if($fec_vencimiento_licencia >= $fecha_ini_op && $fec_vencimiento_licencia <= $fecha_fin_ob){
+								if($fec_vencimiento_licencia > date("Y-m-d",strtotime(date('Y-m-d')."+ 2 month"))){
+									$corresponde = 6; //reimpresion obligatoria pero licencia vigente
+								}else if ($fec_vencimiento_licencia >= $fecha_ini_op && $fec_vencimiento_licencia <= $fecha_fin_op){
+									if($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 36 month"))){
+										$corresponde = 1;
+									}else if ($fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."- 22 month"))){
+										$corresponde = 2;
+									}else{
+										$corresponde = 4; //esto es porque esta inhabilitado
+									}
+								}else if (($fec_vencimiento_licencia >= $fecha_ini_ob && $fec_vencimiento_licencia <= $fecha_fin_ob) && $fec_vencimiento_licencia <= date("Y-m-d",strtotime(date('Y-m-d')."-12 month"))){
+									$corresponde = 1;
+								}else{
+									$corresponde = 3; //esto es porque esta inhabilitado
+								}
 							}
 						}
-					}
-        	                }
+        	                	}
+				}
 			} //fin else reimpre
 		} //fin else ultimo tramite
 
