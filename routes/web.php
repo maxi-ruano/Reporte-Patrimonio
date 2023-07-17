@@ -53,6 +53,17 @@ Route::group( ['middleware' => ['auth']], function() {
   Route::get('reporteControlInsumos',['uses' => 'ReportesController2@reporteControlInsumos','as' => 'reporteControlInsumos']);
   Route::get('/reporte/control-insumos', 'ReportesController2@reporteControlInsumos')->name('reporte.control.insumos');
   Route::get('/exportar-insumos', 'ReportesController2@exportarExcel')->name('exportar.insumos');
+
+  //OBTENER CODIFICADOS , DESCARTES Y BLANCOS
+  Route::get('/obtener-codificados', 'ReportesController2@obtenerCodificados')->name('obtener.codificados');
+  Route::get('/obtener-descartes', 'ReportesController2@obtenerDescartes')->name('obtener.descartes');
+  Route::get('/obtener-blancos', 'ReportesController2@obtenerBlancos')->name('obtener.blancos');
+
+  // DESCARGA ARCHIVO
+  Route::get('/descargar-csv', 'ReportesController2@descargarCSV')->name('descargar-csv');
+  Route::get('/descargar-csv2', 'ReportesController2@descargarCSV2')->name('descargar-csv2');
+  Route::get('/descargar-csv3', 'ReportesController2@descargarCSV3')->name('descargar-csv3');
+
 });
 
 //DASHBOARD
