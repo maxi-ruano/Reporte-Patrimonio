@@ -13,6 +13,7 @@ use App\AnsvControl;
 use App\AnsvDescartes;
 use App\SysMultivalue;
 use App\User;
+use App\SysUsers;
 
 
 class ReportesController2 extends Controller
@@ -102,6 +103,10 @@ function reporteControlInsumos(Request $request)
 
 
 
+
+
+
+
 public function obtenerCodificados(Request $request)
 {
     $loteId = $request->input('loteId');
@@ -127,22 +132,34 @@ public function obtenerCodificados(Request $request)
     // Obtener los nombres de las personas asociadas a los IDs de 'created_by'
     $createdByIDs = $codificados->pluck('created_by');
 
-    $usuarios = User::whereIn('sys_user_id', $createdByIDs)->get(['sys_user_id', 'name']);
+    // $usuarios = User::whereIn('sys_user_id', $createdByIDs)->get(['sys_user_id', 'name']);
+    $usuarios = SysUsers::whereIn('id', $createdByIDs)->get(['id', 'first_name', 'last_name']);
 
     // Obtener los nro_doc de los tramites asociados a los codificados
     $tramiteIDs = $codificados->pluck('tramite_id');
+
 
     $tramites = Tramites::whereIn('tramite_id', $tramiteIDs)->get(['tramite_id', 'nro_doc','sexo']);
 
     // Reemplazar los IDs por los nombres y nro_doc correspondientes en el resultado
     $codificados = $codificados->map(function ($codificado) use ($usuarios, $tramites) {
-        $usuario = $usuarios->where('sys_user_id', $codificado->created_by)->first();
-        if ($usuario) {
-            $nombre = $usuario->name; // Obtener el nombre del usuario
-            $codificado->created_by = $nombre;
-        } else {
-            $codificado->created_by = 'Desconocido'; // Establecer 'Desconocido' si no se encuentra el usuario
-        }
+        // $usuario = $usuarios->where('sys_user_id', $codificado->created_by)->first();
+        // if ($usuario) {
+        //     $nombre = $usuario->name; // Obtener el nombre del usuario
+        //     $codificado->created_by = $nombre;
+        // } else {
+        //     $created_by =   $codificado->created_by;
+        //     $codificado->created_by = $created_by; // Establecer 'Desconocido' si no se encuentra el usuario
+        // }
+
+        $usuario = $usuarios->where('id', $codificado->created_by)->first();
+if ($usuario) {
+    $nombre = $usuario->first_name; // Obtener el nombre del usuario
+    $apellido = $usuario->last_name; // Obtener el apellido del usuario
+    $codificado->created_by = $nombre . ' ' . $apellido; // Combinar nombre y apellido
+} else {
+    $codificado->created_by = 'Desconocido'; // Establecer 'Desconocido' si no se encuentra el usuario
+}
 
         $tramite = $tramites->where('tramite_id', $codificado->tramite_id)->first();
         if ($tramite) {
@@ -157,20 +174,174 @@ public function obtenerCodificados(Request $request)
         return $codificado;
     });
 
- $numeroKit = $lote->nro_kit;
+    // return response()->json($codificados);
+    $numeroKit = $lote->nro_kit;
 
     return response()->json([
         'codificados' => $codificados,
         'numeroKit' => $numeroKit
     ]);
+}
 
+
+
+
+public function obtenerDescartes(Request $request)
+{
+    $loteId = $request->input('loteId');
+
+    // Obtener el rango de control_desde y control_hasta del lote
+    $lote = AnsvLotes::where('lote_id', $loteId)->first();
+
+    // Obtener los descartes dentro del rango de control_desde y control_hasta
+    $descartes = AnsvDescartes::whereBetween('control', [$lote->control_desde, $lote->control_hasta])
+        ->distinct()
+        ->get(['control', 'descripcion', 'created_by']);
+
+    $createdByIDs = $descartes->pluck('created_by')->unique();
+
+    // Obtener los nombres de los usuarios correspondientes al campo created_by
+    $usuarios = SysUsers::whereIn('id', $createdByIDs)->get(['id', 'first_name', 'last_name']);
+
+    // Obtener los datos de la tabla AnsvControl
+    $codificados = AnsvControl::whereIn('nro_control', $descartes->pluck('control'))->get(['nro_control', 'tramite_id']);
+
+    // Obtener los datos de la tabla Tramites
+    $tramites = Tramites::whereIn('tramite_id', $codificados->pluck('tramite_id'))->get(['tramite_id', 'nro_doc']);
+
+    // Combinar los datos de descartes, usuarios, codificados y tramites
+    $descartes = $descartes->map(function ($descarte) use ($usuarios, $codificados, $tramites) {
+        $nombre = 'Desconocido';
+        $apellido = '';
+
+        if ($descarte->created_by) {
+            $usuario = $usuarios->where('id', $descarte->created_by)->first();
+
+            if ($usuario) {
+                $nombre = $usuario->first_name; // Obtener el nombre del usuario
+                $apellido = $usuario->last_name; // Obtener el apellido del usuario
+            }
+        }
+
+        $codificado = $codificados->where('nro_control', $descarte->control)->first();
+        $tramite = $tramites->firstWhere('tramite_id', optional($codificado)->tramite_id);
+
+        return [
+            'control' => $descarte->control,
+            'created_by' => $nombre . ' ' . $apellido, // Combinar nombre y apellido
+            'descripcion' => $descarte->descripcion,
+            'nro_doc' => optional($tramite)->nro_doc ?: 'N.C',
+            'tramite_id' => optional($codificado)->tramite_id ?: 'N.C',
+        ];
+    });
+
+    $numeroKit = $lote->nro_kit;
+
+    return response()->json([
+        'descartes' => $descartes,
+        'numeroKit' => $numeroKit,
+    ]);
 }
 
 
 
 
 
-public function obtenerDescartes(Request $request)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public function obtenerDescartes23(Request $request)
+{
+    $loteId = $request->input('loteId');
+
+    // Obtener el rango de control_desde y control_hasta del lote
+    $lote = AnsvLotes::where('lote_id', $loteId)->first();
+
+    // Obtener los descartes dentro del rango de control_desde y control_hasta
+    $descartes = AnsvDescartes::whereBetween('control', [$lote->control_desde, $lote->control_hasta])
+        ->distinct()
+        ->get(['control', 'descripcion', 'created_by']);
+
+    $descartes = $descartes->map(function ($descarte) {
+        $nombre = 'Desconocido';
+        $apellido = '';
+        $tramiteId = 'N.C';
+
+        if ($descarte->created_by) {
+            $usuario = SysUsers::find($descarte->created_by);
+
+            if ($usuario) {
+                $nombre = $usuario->first_name; // Obtener el nombre del usuario
+                $apellido = $usuario->last_name; // Obtener el apellido del usuario
+            }
+        }
+
+        $codificado = AnsvControl::where('nro_control', $descarte->control)
+            ->first();
+
+        if ($codificado) {
+            $tramiteId = $codificado->tramite_id;
+        }
+
+        return [
+            'control' => $descarte->control,
+            'created_by' => $nombre . ' ' . $apellido, // Combinar nombre y apellido
+            'descripcion' => $descarte->descripcion,
+            'nro_doc' => 'N.C',
+            'tramite_id' => $tramiteId,
+        ];
+    });
+
+    $numeroKit = $lote->nro_kit;
+
+    return response()->json([
+        'descartes' => $descartes,
+        'numeroKit' => $numeroKit,
+    ]);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public function obtenerDescartes22(Request $request)
 {
     $loteId = $request->input('loteId');
 
@@ -409,6 +580,10 @@ public function exportarExcel2(Request $request)
 
 
 
+
+
+
+
 public function descargarCSV(Request $request)
 {
     $loteId = $request->input('loteId');
@@ -431,10 +606,9 @@ public function descargarCSV(Request $request)
         ->whereNotIn('nro_control', $descartados->pluck('control'))
         ->get(['tramite_id', 'nro_control', 'created_by']);
 
-    // Obtener los nombres de las personas asociadas a los IDs de 'created_by'
+    // Obtener los nombres y apellidos de las personas asociadas a los IDs de 'created_by'
     $createdByIDs = $codificados->pluck('created_by');
-
-    $usuarios = User::whereIn('sys_user_id', $createdByIDs)->get(['sys_user_id', 'name']);
+    $usuarios = SysUsers::whereIn('id', $createdByIDs)->get(['id', 'first_name', 'last_name']);
 
     // Obtener las descripciones y nros de doc asociados a los tramite_id
     $tramites = Tramites::whereIn('tramite_id', $codificados->pluck('tramite_id'))->get(['tramite_id', 'nro_doc', 'sexo']);
@@ -442,26 +616,28 @@ public function descargarCSV(Request $request)
 
     // Combinar los datos de codificados, tramites y descartes
     $codificados = $codificados->map(function ($codificado) use ($usuarios, $tramites, $descartes) {
-        $usuario = $usuarios->where('sys_user_id', $codificado->created_by)->first();
+        $usuario = $usuarios->where('id', $codificado->created_by)->first();
         $tramite = $tramites->where('tramite_id', $codificado->tramite_id)->first();
         $descarte = $descartes->where('control', $codificado->nro_control)->first();
 
-        $nombre = $usuario ? $usuario->name : 'Desconocido';
-        $descripcion = $descarte ? $descarte->descripcion : 'N.C';
+        $nombre = $usuario ? $usuario->first_name : 'Desconocido';
+        $apellido = $usuario ? $usuario->last_name : '';
         $nro_doc = $tramite ? $tramite->nro_doc : 'N.C';
 
         return [
             'tramite_id' => $codificado->tramite_id,
             'nro_control' => $codificado->nro_control,
-            'created_by' => $nombre,
+            'created_by' => $nombre . ' ' . $apellido,
             'nro_doc' => $nro_doc,
             'sexo' => $tramite ? $tramite->sexo : 'N.C'
         ];
     });
 
+    $nro_kit =$lote->nro_kit;
+     
     // Crear un archivo temporal
     $tempFile = tmpfile();
-    $csvHeaders = ['Trámite ID', 'Número de Control', 'Creado por', 'Descripción', 'Nro. Doc', 'Sexo'];
+    $csvHeaders = ['Trámite ID', 'Número de Control', 'Creado por','Nro. Doc', 'Sexo'];
     fputcsv($tempFile, $csvHeaders);
 
     // Escribir los datos en el archivo temporal
@@ -470,7 +646,6 @@ public function descargarCSV(Request $request)
             $codificado['tramite_id'],
             $codificado['nro_control'],
             $codificado['created_by'],
-            // $codificado['descripcion'],
             $codificado['nro_doc'],
             $codificado['sexo']
         ];
@@ -484,13 +659,15 @@ public function descargarCSV(Request $request)
     // Crear la respuesta con el archivo CSV adjunto
     $response = Response::make($fileContent, 200);
     $response->header('Content-Type', 'text/csv');
-    $response->header('Content-Disposition', 'attachment; filename="codificados.csv"');
+    $response->header('Content-Disposition', 'attachment; filename="' . $nro_kit . '.csv"');
 
     // Cerrar y eliminar el archivo temporal
     fclose($tempFile);
 
     return $response;
 }
+
+
 
 
 public function descargarCSV2(Request $request)
@@ -503,76 +680,71 @@ public function descargarCSV2(Request $request)
     // Obtener los descartes dentro del rango de control_desde y control_hasta
     $descartes = AnsvDescartes::whereBetween('control', [$lote->control_desde, $lote->control_hasta])
         ->distinct()
-        ->get(['control', 'descripcion']);
+        ->get(['control', 'descripcion', 'created_by']);
 
-    // Obtener los codificados asociados a los descartes
-    $codificados = AnsvControl::whereIn('nro_control', $descartes->pluck('control'))->get(['nro_control', 'tramite_id', 'created_by']);
+    $createdByIDs = $descartes->pluck('created_by')->unique();
 
-    // Obtener los datos de la tabla tramites
+    // Obtener los nombres de los usuarios correspondientes al campo created_by
+    $usuarios = SysUsers::whereIn('id', $createdByIDs)->get(['id', 'first_name', 'last_name']);
+
+    // Obtener los datos de la tabla AnsvControl
+    $codificados = AnsvControl::whereIn('nro_control', $descartes->pluck('control'))->get(['nro_control', 'tramite_id']);
+
+    // Obtener los datos de la tabla Tramites
     $tramites = Tramites::whereIn('tramite_id', $codificados->pluck('tramite_id'))->get(['tramite_id', 'nro_doc']);
 
-    // Combinar los datos de descartes, codificados y tramites
-    $descartes = $descartes->map(function ($descarte) use ($codificados, $tramites) {
+    // Combinar los datos de descartes, usuarios, codificados y tramites
+    $descartes = $descartes->map(function ($descarte) use ($usuarios, $codificados, $tramites) {
+        $nombre = 'Desconocido';
+
+        if ($descarte->created_by) {
+            $usuario = $usuarios->where('id', $descarte->created_by)->first();
+
+            if ($usuario) {
+                $nombre = $usuario->first_name . ' ' . $usuario->last_name; // Combinar nombre y apellido
+            }
+        }
+
         $codificado = $codificados->where('nro_control', $descarte->control)->first();
         $tramite = $tramites->firstWhere('tramite_id', optional($codificado)->tramite_id);
 
         return [
-            'tramite_id' => optional($codificado)->tramite_id,
+            'tramite_id' => optional($codificado)->tramite_id ?: 'N.C',
             'control' => $descarte->control,
-            'created_by' => optional($codificado)->created_by,
+            'created_by' => $nombre,
             'descripcion' => $descarte->descripcion,
-            'nro_doc' => optional($tramite)->nro_doc,
+            'nro_doc' => optional($tramite)->nro_doc ?:'N.C',
         ];
     });
-
 
     $tempFile = tmpfile();
 
     $csvHeaders = ['Trámite ID', 'Número de Control', 'Creado por', 'Descripción', 'Nro. Doc'];
     fputcsv($tempFile, $csvHeaders);
 
-    $maxFieldLengths = [11, 17, 11, 40, 10, 4]; // Maximum field lengths for alignment
-
     foreach ($descartes as $descarte) {
-	$rowData = [
-        	$descarte['tramite_id'],
-	        $descarte['control'],
-	        $descarte['created_by'],
-	        $descarte['descripcion'],
-	        $descarte['nro_doc'],
-	];
+        $rowData = [
+            $descarte['tramite_id'],
+            $descarte['control'],
+            $descarte['created_by'],
+            $descarte['descripcion'],
+            $descarte['nro_doc'],
+        ];
 
-	$rowData = array_map(function($value, $index) use ($maxFieldLengths) {
-  	      $paddedValue = str_pad($value ?: 'N.C.', $maxFieldLengths[$index]);
-
-	      if ($index === 4) {
-	            $paddedValue = str_pad($paddedValue, $maxFieldLengths[$index], " ", STR_PAD_RIGHT);
-	      }
-
-              return str_replace('"', '', $paddedValue);
-
-	}, $rowData, array_keys($rowData));
-
-    	$rowString = implode(',', $rowData);
-	fwrite($tempFile, $rowString . "\n");
-     }
+        fputcsv($tempFile, $rowData);
+    }
 
     fseek($tempFile, 0);
     $fileContent = stream_get_contents($tempFile);
 
-    $fileContent = preg_replace('/\n{2,}/', "\n", $fileContent); // Remove empty lines
-    $fileContent = preg_replace('/^,|,$/m', '', $fileContent); // Remove leading/trailing commas in each line
-
     $response = response($fileContent, 200)
-    	->header('Content-Type', 'text/csv')
-    	->header('Content-Disposition', 'attachment; filename="codificados.csv"');
+        ->header('Content-Type', 'text/csv')
+        ->header('Content-Disposition', 'attachment; filename="codificados.csv"');
 
     fclose($tempFile);
 
     return $response;
-
 }
-
 
 
 public function descargarCSV3(Request $request)
