@@ -2,6 +2,45 @@
 @extends('layouts.templeate')
 @section('titlePage', 'Control Insumos')
 @section('content')
+
+<style>
+
+.text-right {
+    text-align: right;
+}
+
+.table{
+    font-size: 14px;
+}
+
+.col-md-6{
+    font-size: 14px;
+}
+
+.flex{
+    display: flex;
+}
+
+.content-between{
+    justify-content: space-between;
+}
+
+.mb-0{
+    margin-bottom: 0;
+}
+
+.mb-1{
+    margin-bottom: 1em;
+}
+
+.fsize{
+   font-size: 15px;
+   bottom: 108px;
+}
+
+</style>
+
+
     <!-- page content -->
     <br>
     <br>
@@ -35,7 +74,9 @@
             </div>
 
         </div>
-        <button type="submit" class="btn btn-primary">Buscar</button>
+
+        <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+
     </form>
 
     <div class="row">
@@ -60,7 +101,7 @@
                         <thead>
                             <tr>
 
-                                <th>Lote_id</th>
+                                <th>Lote ID</th>
                                 <th>Sucursal</th>
                                 <th>Control desde</th>
                                 <th>Control hasta</th>
@@ -85,21 +126,17 @@
                                     <td>{{ $insumo['cantidadDescartados'] }}</td>
                                     <td>{{ $insumo['cantidadBlancos'] }}</td>
                                     <td>{{ $insumo['nroKit'] }}</td>
-                                    <td>
-                                      <button class="btn btn-primary btn-codificados" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#codificadosModal">Codificados</button>
+                                    <td align="center">
+                                      <button class="btn btn-primary btn-codificados btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#codificadosModal">Codificados</button>
                                     </td>
 
-                                    <td>
-                                    <button class="btn btn-primary btn-descartes" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#descartesModal">Descartes</button>
+                                    <td align="center">
+                                    	<button class="btn btn-primary btn-descartes btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#descartesModal">Descartes</button>
+                                    </td>
+
+                                   <td align="center">
+                                    <button class="btn btn-primary btn-blancos btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#blancosModal">Blancos</button>
                                    </td>
-
-
-
-                                   <td>
-                                    <button class="btn btn-primary btn-blancos" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#blancosModal">Blancos</button>
-                                </td>
-
-
 
                                 </tr>
                             @endforeach
@@ -112,25 +149,26 @@
     </div>
 
     <p>
-       <a class="btn btn-primary" href="{{ route('exportar.insumos', ['sucursal' => $sucursalSeleccionada, 'page' => $lotesSucursal->currentPage()]) }}">Descargar Excel</a>
-
-    </p> 
+       <a class="btn btn-primary btn-sm" href="{{ route('exportar.insumos', ['sucursal' => $sucursalSeleccionada, 'page' => $lotesSucursal->currentPage()]) }}">Descargar Excel</a>
+    </p>
 
 
 <div class="modal fade" id="codificadosModal" tabindex="-1" role="dialog" aria-labelledby="codificadosModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="codificadosModalLabel">Codificados del Lote : <span id="loteIdPlaceholder"></span> </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header flex content-between" style="flex-direction: row-reverse;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin: 0 12px 0 auto;">
                     <span aria-hidden="true">&times;</span>
-                </button>
+                </button><br>
 
-                <a href="#" id="btnDescargarExcel" class="btn btn-primary">Descargar Excel</a> <!-- Agregado: Botón de descarga -->
+                <a href="#" id="btnDescargarExcel" class="btn btn-primary btn-sm mb-0">Descargar Excel</a> <!-- Agregado: Botón de descarga -->
 
             </div>
             <div class="modal-body">
-                <p class="text-right">Número de Kit: <span id="numeroKit"></span></p>
+		<div class="flex content-between mb-1">
+	                <p class="mb-0 fsize" id="codificadosModalLabel">Codificados del Lote : <span id="loteIdPlaceholder"></span> </p>
+	                <p class="mb-0 fsize" id='nroKit'>Número de Kit: <span id="numeroKit"></span></p>
+		</div>
 
                 <table class="table">
                     <thead>
@@ -153,14 +191,17 @@
 <div class="modal fade" id="descartesModal" tabindex="-1" role="dialog" aria-labelledby="descartesModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="descartesModalLabel">Descartes del Lote: <span id="loteIdPlaceholder2"></span></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header flex content-between" style="flex-direction: row-reverse;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin: 0 12px 0 auto;">
                     <span aria-hidden="true">&times;</span>
-                </button>
-      <button id="btnDescargarExcel2" class="btn btn-primary">Descargar Excel</button>
+                </button><br>
+	      	<button id="btnDescargarExcel2" class="btn btn-primary btn-sm mb-0">Descargar Excel</button>
             </div>
             <div class="modal-body">
+		<div class="flex content-between mb-1">
+	                <p class="mb-0 fsize" id="descartesModalLabel">Descartes del Lote: <span id="loteIdPlaceholder2"></span></p>
+			<p class="mb-0 fsize" id='nroKit'>Número de Kit: <span id="numeroKitPlaceholder"></span></p>
+		</div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -173,29 +214,31 @@
                     </thead>
                     <tbody id="descartesTableBody"></tbody>
                 </table>
-              
+
             </div>
         </div>
     </div>
 </div>
- 
+
 
 
 
 <div class="modal fade" id="blancosModal" tabindex="-1" role="dialog" aria-labelledby="blancosModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="blancosModalLabel">
-                    Blancos del Lote: <span id="loteIdPlaceholder3"></span>
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-              <button id="btnDescargarExcel3" class="btn btn-primary">Descargar Excel</button>
+            <div class="modal-header flex content-between" style="flex-direction: row-reverse;">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin: 0 12px 0 auto;">
+                   <span aria-hidden="true">&times;</span>
+              </button>
+              <button id="btnDescargarExcel3" class="btn btn-primary btn-sm mb-0">Descargar Excel</button>
             </div>
             <div class="modal-body">
-                <p class="text-right">Número de Kit: <span id="numeroKit"></span></p>
+		<div class="flex content-between mb-1">
+			<p class="mb-0 fsize">
+	                    Blancos del Lote: <span id="loteIdPlaceholder3"></span>
+        	        </p>
+                  	<p class="mb-0 fsize" id='nroKit'>Número de Kit: <span id="numeroKitPlaceholder2"></span></p>
+		</div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -300,10 +343,7 @@
 });
     });
 
-</script>
 
-
-<script>
     $(document).ready(function() {
         $('.btn-descartes').click(function() {
             var loteId = $(this).data('lote-id');
@@ -315,8 +355,8 @@
                 type: 'GET',
                 data: { loteId: loteId },
                 success: function(response) {
-
-                numeroKit = response.numeroKit;
+		    $('#numeroKitPlaceholder').text(response.numeroKit);
+                    numeroKit = response.numeroKit;
                     // Limpia la tabla de descartes
                     $('#descartesTableBody').empty();
 
@@ -375,16 +415,8 @@
     });
 });
 
-
-
-
     });
-</script>
 
-
-
-
-<script>
 
 $(document).ready(function() {
     $('.btn-blancos').click(function() {
@@ -397,15 +429,15 @@ $(document).ready(function() {
             data: { loteId: loteId },
             success: function(response) {
 
-            numeroKit = response.numeroKit;
-
+	        numeroKit = response.numeroKit;
+		$('#numeroKitPlaceholder2').text(response.numeroKit);
                 $('#cantidadBlancos').text(response.cantidadBlancos);
                 $('#numeroKit').text(response.numeroKit);
 
                 var blancos = response.blancos;
                 var blancosTableBody = $('#blancosTableBody');
                 blancosTableBody.empty();
-                
+
 
                 if (blancos.length > 0) {
                     for (var i = 0; i < blancos.length; i++) {
@@ -452,28 +484,12 @@ $(document).ready(function() {
                 console.log(error);
             }
         });
-    });
-
-
-
-
-
-
+   });
 
 });
 
 
-
 </script>
-
-
-
-
-
-
-
-
-
 
 
 @section('scripts')
