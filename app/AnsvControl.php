@@ -10,7 +10,7 @@ class AnsvControl extends Model
   protected $primaryKey = 'tramite_id';
   protected $fillable = ['tramite_id', 'nro_control', 'created_by', 'creation_date', 'liberado'];
 
-
+  public $timestamps = false;
 
 
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\AnsvLotes;
 use App\Tramites;
 use App\AnsvControl;
@@ -27,9 +28,333 @@ class ReportesController2 extends Controller
 
 
 
+
+
+
+    public function ejecutarAccion(Request $request)
+    {
+        $accion = $request->input('accion');
+        $deshabilitarBotonAcciones = false;
+
+        if ($accion === 'agregar_lote') {
+
+            $deshabilitarBotonAcciones = true;
+            // Obtener datos para la vista
+            $sucursaless = SysMultivalue::where('type', 'SUCU')->get();
+            $Todassucursales = SysMultivalue::where('type', 'SUCU')->get();
+            $sucursalSeleccionada = $request->sucursal;
+            return view('reportes.crear_lote', compact('sucursaless', 'Todassucursales', 'sucursalSeleccionada',));
+
+
+
+        } elseif ($accion === 'habilitar_lote') {
+            $selectedItems = $request->input('selectedItems', []);
+            if (empty($selectedItems)) {
+                $request->session()->flash('warning', 'Por favor, selecciona al menos un lote antes de realizar la acción.');
+                return redirect()->route('reporte.control.insumos');
+            }
+            $affectedRows = AnsvLotes::whereIn('lote_id', $selectedItems)->update([
+                'habilitado' => true,
+                'modification_date' => now()
+            ]);
+            return redirect()->back();
+
+
+        } 
+        
+        elseif ($accion === 'deshabilitar_lote') {
+            
+
+       
+
+
+        $selectedItems = $request->input('selectedItems', []);
+        if (empty($selectedItems)) {
+            $request->session()->flash('warning', 'Por favor, selecciona al menos un lote antes de realizar la acción.');
+            return redirect()->route('reporte.control.insumos');
+        }
+    
+        // Obtener los rangos de números de control de los lotes seleccionados
+        // $rangosControl = AnsvLotes::whereIn('lote_id', $selectedItems)
+        //     ->select('control_desde', 'control_hasta')
+        //     ->get();
+    
+          
+        //     $numerosControl = [];
+        //     foreach ($rangosControl as $rango) {
+        //         for ($i = $rango->control_desde; $i <= $rango->control_hasta; $i++) {
+        //             $numerosControl[] = $i;
+        //         }
+        //     }
+        
+        //     $numerosControlEnUso = AnsvControl::whereIn('nro_control', $numerosControl)->exists();
+        //     $numerosControlDescartados = AnsvDescartes::whereIn('control', $numerosControl)->exists();
+        $rangosControl = AnsvLotes::whereIn('lote_id', $selectedItems)
+        ->select('control_desde', 'control_hasta')
+        ->first();
+
+      
+       $numerosControlEnUso = AnsvControl::whereBetween('nro_control', [$rangosControl->control_desde, $rangosControl-> control_hasta])->exists();
+       $numerosControlDescartados = AnsvDescartes::whereBetween('control', [$rangosControl->control_desde, $rangosControl-> control_hasta])->exists();
+    
+            if ($numerosControlEnUso ||   $numerosControlDescartados) {
+                $request->session()->flash('error', 'No se pueden deshabilitar los lotes en uso.');
+            return redirect()->route('reporte.control.insumos');
+        }
+
+      
+
+
+    
+        $affectedRows = AnsvLotes::whereIn('lote_id', $selectedItems)->update([
+            'habilitado' => false,
+            'modification_date' => now()
+        ]);
+    
+        return redirect()->back();
+        
+        } elseif ($accion === 'eliminar_lote') {
+            $selectedItems = $request->input('selectedItems', []);
+
+            if (empty($selectedItems)) {
+                $request->session()->flash('warning', 'Por favor, selecciona al menos un lote antes de realizar la acción.');
+                return redirect()->route('reporte.control.insumos');
+            }
+
+
+            $rangosControl = AnsvLotes::whereIn('lote_id', $selectedItems)
+            ->select('control_desde', 'control_hasta')
+            ->first();
+
+          
+           $numerosControlEnUso = AnsvControl::whereBetween('nro_control', [$rangosControl->control_desde, $rangosControl-> control_hasta])->exists();
+           $numerosControlDescartados = AnsvDescartes::whereBetween('control', [$rangosControl->control_desde, $rangosControl-> control_hasta])->exists();
+
+    
+       if ($numerosControlEnUso ||  $numerosControlDescartados) {
+                 $request->session()->flash('error', 'No se pueden eliminar los lotes en uso.');
+
+                
+              return redirect()->route('reporte.control.insumos');
+        } else{
+
+            $affectedRows = AnsvLotes::whereIn('lote_id', $selectedItems)->delete();
+
+            //  return redirect()->route('reporte.control.insumos')->with('success', 'Lote eliminado correctamente');
+             return redirect()->back();
+        }
+
+
+
+
+          
+
+        } elseif ($accion === 'editar_lote') {
+
+            $selectedItems = $request->input('selectedItems', []);
+            if (empty($selectedItems)) {
+                $request->session()->flash('warning', 'Por favor, selecciona al menos un lote antes de realizar la acción.');
+                return redirect()->route('reporte.control.insumos');
+            }
+            // return view('reportes.editar_lote', compact('selectedItems'));
+            $lote_id = $selectedItems[0];
+            return redirect()->route('editar.lote', ['lote_id' => $lote_id]);
+
+        } elseif ($accion == 'Elegir accion') {
+
+        return back()->withErrors(['Por favor elige una acción'])->withInput();
+
+        }
+    }
+
+
+
+    
+
+
+
+
+   
+ 
+
+    public function guardarLote(Request $request)
+    {
+        // Validar los datos del formulario (opcional, pero recomendado)
+    
+        $controlDesde = $request->input('nro_control_desde');
+        $controlHasta = $request->input('nro_control_hasta');
+    
+      
+    
+        // $existingLote = DB::table('ansv_lotes')
+        // ->where(function ($query) use ($controlDesde, $controlHasta) {
+        //     $query->where(function ($query) use ($controlDesde, $controlHasta) {
+        //         $query->where('control_desde', '<=', $controlHasta)
+        //             ->where('control_hasta', '>=', $controlDesde);
+        //     })
+        //     ->orWhere(function ($query) use ($controlDesde, $controlHasta) {
+        //         $query->where('control_desde', '<=', $controlHasta)
+        //             ->where('control_hasta', '>=', $controlHasta);
+        //     });
+        // })
+        // ->where(function ($query) {
+        //     $query->whereNull('end_date'); // Solo registros con end_date nulo
+        //     // O puedes agregar otras condiciones para filtrar registros eliminados
+        // })
+        // ->exists();
+
+
+    //     $existingLote = DB::table('ansv_lotes')
+    // ->where(function ($query) use ($controlDesde, $controlHasta) {
+    //     $query->where(function ($query) use ($controlDesde, $controlHasta) {
+    //         $query->where('control_desde', '<=', $controlHasta)
+    //             ->where('control_hasta', '>=', $controlDesde);
+    //     })
+    //     ->orWhere(function ($query) use ($controlDesde, $controlHasta) {
+    //         $query->where('control_desde', '<=', $controlHasta)
+    //             ->where('control_hasta', '>=', $controlHasta);
+    //     });
+    // })
+    // ->where(function ($query) {
+    //     $query->whereNull('end_date'); // Solo registros con end_date nulo
+    //     // O puedes agregar otras condiciones para filtrar registros eliminados
+    // })
+    // ->orWhere(function ($query) use ($controlDesde, $controlHasta) {
+    //     $query->where('control_desde', $controlDesde)
+    //         ->where('control_hasta', $controlHasta)
+    //         ->whereNull('end_date'); // Para evitar duplicados exactos
+    // })
+    // ->exists();
+
+
+    $query = "
+    SELECT *
+    FROM ansv_lotes
+    WHERE (
+        (control_desde <= ? AND control_hasta >= ?)
+        OR (control_desde <= ? AND control_hasta >= ?)
+    )
+    AND (end_date IS NULL)
+    OR (
+        control_desde = ? AND control_hasta = ?
+        AND end_date IS NULL
+    )
+";
+
+$existingLote = DB::select($query, [$controlHasta, $controlDesde, $controlHasta, $controlHasta, $controlDesde, $controlHasta]);
+
+
+
+    
+    if ($existingLote) {
+        $sucursaless = SysMultivalue::where('type', 'SUCU')->get();
+        $Todassucursales = SysMultivalue::where('type', 'SUCU')->get();
+        $sucursalSeleccionada = $request->sucursal;
+        $error2 = 'El rango de control ya se superpone con un lote existente.';
+        return view('reportes.crear_lote', compact('sucursaless', 'Todassucursales', 'sucursalSeleccionada', 'error2'));
+    }
+    
+
+
+
+
+
+
+
+
+
+
+    //     $nroKitExists = DB::table('ansv_lotes')
+    //     ->where('nro_kit', $request->input('nro_kit'))
+    //     ->exists();
+
+    // if ($nroKitExists) {
+    //     $sucursaless = SysMultivalue::where('type', 'SUCU')->get();
+    //     $Todassucursales = SysMultivalue::where('type', 'SUCU')->get();
+    //     $sucursalSeleccionada = $request->sucursal;
+    //     $error = 'El nro_kit ya está en uso. Debe ser único.';
+    //     return view('reportes.crear_lote', compact('sucursaless', 'Todassucursales', 'sucursalSeleccionada', 'error'));
+        
+    // }
+    
+        // Continuar con la creación del lote si no hay superposiciones
+        $nextLoteId = DB::table('ansv_lotes')->max('lote_id') + 1;
+    
+        $data = [
+            'lote_id' => $nextLoteId,
+            'sucursal_id' => $request->input('sucursal_id'), 
+            'control_desde' => $controlDesde,
+            'control_hasta' => $controlHasta,
+            'habilitado' => false,
+            'created_by' => 1,
+            'creation_date' => now(),
+            'modified_by' => null,
+            'modification_date' => null,
+            'end_date' => null,
+            'nro_kit' => $request->input('nro_kit'),
+            'nro_caja' => $request->input('nro_caja'),
+        ];
+    
+        // Insertar los datos en la tabla ansv_lotes
+        DB::table('ansv_lotes')->insert($data);
+    
+        // Redirigir a la página de éxito o a donde desees después de guardar el lote
+        return redirect()->route('reporte.control.insumos')->with('success', 'Lote creado correctamente');
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function editarLote($lote_id)
+    {
+        // Recupera el lote que se va a editar
+        $lote = AnsvLotes::find($lote_id);
+
+        // dd($lote);
+    //    dd($lote->control_desde) ;
+        return view('reportes.editar_lote', compact('lote'));
+    }
+
+     public function actualizarLote(Request $request, $lote_id)
+    {
+        // Encuentra el lote que se va a actualizar
+        $lote = AnsvLotes::find($lote_id);
+    
+        // Actualiza los campos con los valores enviados desde el formulario
+        $lote->control_desde = $request->input('nro_control_desde');
+        $lote->control_hasta = $request->input('nro_control_hasta');
+        $lote->nro_kit = $request->input('nro_kit');
+    
+        // Guarda los cambios en la base de datos
+        $lote->save();
+    
+        // Redirige a la vista de edición con un mensaje de éxito
+        return redirect()->route('reporte.control.insumos')->with('success', 'Lote creado correctamente');
+    }
+    
+
+
+
+
+
 function reporteControlInsumos(Request $request)
 {
     $sucursaless = SysMultivalue::where('type', 'SUCU');
+
+   
 
     $request->sucursal = auth()->user()->can('view_insumos_all') ? $request->sucursal : auth()->user()->sucursal;
 
@@ -38,14 +363,33 @@ function reporteControlInsumos(Request $request)
     }
 
     $sucursaless = $sucursaless->get();
+
+    // dd($sucursaless);
+
     $sucursalSeleccionada = $request->sucursal;
     $Todassucursales = SysMultivalue::where('type', 'SUCU')->get();
     $lotesImpresos = [];
+    $control_desde = $request->input('control_desde');
+  
 
 
-    $lotesSucursalQuery = AnsvLotes::noEliminados()->when($sucursalSeleccionada, function ($query) use ($sucursalSeleccionada) {
-        return $query->where('sucursal_id', $sucursalSeleccionada);
-    })->orderByDesc('lote_id');
+
+
+   
+    $controlBuscado = $request->input('nro_control');
+
+    $lotesSucursalQuery = AnsvLotes::noEliminados()
+        ->when($sucursalSeleccionada, function ($query) use ($sucursalSeleccionada) {
+            return $query->where('sucursal_id', $sucursalSeleccionada);
+        })
+        ->when($controlBuscado, function ($query) use ($controlBuscado) {
+            return $query->where(function ($query) use ($controlBuscado) {
+                $query->where('control_desde', '<=', $controlBuscado)
+                    ->where('control_hasta', '>=', $controlBuscado);
+            });
+        })
+        ->orderByDesc('lote_id');
+
 
     // Filtrar por número de kit si se ha proporcionado
     if ($request->numero_kit) {
@@ -56,6 +400,7 @@ function reporteControlInsumos(Request $request)
     $lotesSucursal = $lotesSucursalQuery->paginate(15)->appends(['sucursal' => $sucursalSeleccionada, 'numero_kit' => $request->numero_kit]);
 
     foreach ($lotesSucursal as $lote) {
+        
         $descartados = AnsvDescartes::whereBetween('control', [$lote->control_desde, $lote->control_hasta])
             ->distinct()
             ->get(['control']);
@@ -74,8 +419,13 @@ function reporteControlInsumos(Request $request)
         $nroKit = $lote->getAttribute('nro_kit');
         $nroCaja = $lote->getAttribute('nro_caja');
 
+
+        // dd($habilitado);
+
         $lotesImpresos[] = [
             'sucursal' => $sucursaless->where('id', $lote->sucursal_id)->first()->description,
+            // 'sucursal' => $sucursaless->where('id', $lote->sucursal_id),
+
             'lote_id' => $lote->lote_id,
             'nroKit' => $nroKit,
             'nroCaja' => $nroCaja,
@@ -84,12 +434,14 @@ function reporteControlInsumos(Request $request)
             'control_desde' => $lote->control_desde,
             'control_hasta' => $lote->control_hasta,
             'cantidadBlancos' => $cantidadBlancos,
-            'cantidadDescartados' => $cantidadDescartados
+            'cantidadDescartados' => $cantidadDescartados,
+            'habilitado' => $lote->habilitado
         ];
     }
 
 
     $request->session()->put('lotesImpresos', $lotesImpresos);
+    $request->session()->put('sucursalSeleccionada', $sucursalSeleccionada);
 
 
     return view('reportes.reportesControlInsumos2', [

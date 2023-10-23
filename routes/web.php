@@ -59,6 +59,40 @@ Route::group( ['middleware' => ['auth']], function() {
   Route::get('/obtener-descartes', 'ReportesController2@obtenerDescartes')->name('obtener.descartes');
   Route::get('/obtener-blancos', 'ReportesController2@obtenerBlancos')->name('obtener.blancos');
 
+  // CREAR LOTE 
+  Route::post('/accion-lote', 'ReportesController2@ejecutarAccion')->name('accionLote');
+
+  // GUARDAR LOTE 
+
+Route::post('/guardar-lote', 'ReportesController2@guardarLote')->name('guardarLote');
+
+//EDITAR LOTE 
+
+Route::get('/editar-lote/{lote_id}', 'ReportesController2@editarLote')->name('editar.lote');
+
+//ACTUALIZAR LOTE 
+
+Route::put('/actualizar-lote/{lote_id}', 'ReportesController2@actualizarLote')->name('actualizarLote');
+
+
+Route::get('/informe-descartes',['uses' => 'ReportesControlDescartes@mostrarInformeDescartes','as' => 'informe-descartes']);
+
+Route::get('/control-descartes', 'ReportesController2@reporteControlInsumos')->name('reporte.control.descartes');
+
+Route::get('/descartar-insumo', 'ReportesControlDescartes@descartarInsumo')->name('descartarInsumo');
+
+Route::post('/insertar-descarte', 'ReportesControlDescartes@insertarDescarte')->name('insertarDescarte');
+
+
+Route::post('/consultar-datos', 'ReportesControlDescartes@consultarDatos')->name('consultarDatos');
+
+
+// HABILITAR LOTE 
+
+// Route::post('/habilitar-lote', 'ReportesController2@ejecutarAccion')->name('ejecutarAccion');
+
+
+
   // DESCARGA ARCHIVO
   Route::get('/descargar-csv', 'ReportesController2@descargarCSV')->name('descargar-csv');
   Route::get('/descargar-csv2', 'ReportesController2@descargarCSV2')->name('descargar-csv2');

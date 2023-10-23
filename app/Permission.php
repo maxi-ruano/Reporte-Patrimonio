@@ -24,6 +24,8 @@ class Permission extends Model
             'edit_tramitesHabilitados',
             'delete_tramitesHabilitados',
 
+            
+
         ];
     }
 }
