@@ -73,7 +73,9 @@
       </li>
       @endif
 
-     @can('view_insumos')
+  
+
+     @canany(['view_insumos','view_insumos_all'])
       <li>
         <a href="{{ route('reporteControlInsumos') }}">
           <i class="fa fa-file"></i> Reporte Control de Insumos  (Lotes) 
@@ -81,6 +83,16 @@
         </a>
       </li>
      @endcan
+
+     @canany(['view_insumos','view_insumos_all'])
+     <li>
+       <a href="{{ route('informe-descartes') }}">
+         <i class="fa fa-file"></i> Reporte Control Descartes
+         <span class="fa fa-chevron-down"></span>
+       </a>
+     </li>
+    @endcan
+
     </ul>
   </div>
 

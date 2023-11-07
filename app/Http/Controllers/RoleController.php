@@ -60,6 +60,10 @@ class RoleController extends Controller
 
             $permissions = $request->get('permissions', []);
 
+            // dd($permissions);
+
+            $permissions[] = 'view_actions_button';
+
             $role->syncPermissions($permissions);
 
             flash( $role->name . ' permissions has been updated.');

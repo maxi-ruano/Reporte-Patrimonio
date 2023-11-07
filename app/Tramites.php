@@ -40,5 +40,16 @@ class Tramites extends Model
         return "";
     }
 
+public function tramite()
+{
+    return $this->belongsTo(Tramites::class, 'tramite_id');
+}
+
+
+
+
+
+
+
 
 }
