@@ -260,7 +260,7 @@ class TramitesAInicarController extends Controller
   }
 
   public function crearValidacionesPrecheck($id){
-    $valp = SysMultivalue::where('type','VALP')->get();
+    $valp = SysMultivalue::where('type','VALP')->whereNotIn('id',[1,2])->get();
     foreach ($valp as $key => $value) {
       $existe = ValidacionesPrecheck::where('tramite_a_iniciar_id',$id)->where('validation_id',$value->id)->count();
       if(!$existe){
@@ -327,7 +327,7 @@ class TramitesAInicarController extends Controller
       		$array = json_decode($json,TRUE);
       		$persona = null;
       		$libreDeuda = null;
-      
+
       		foreach ($array as $key => $value) {
         	    if($value['tag'] == 'ERROR' ){
           		$res['res'] = false;
@@ -342,12 +342,18 @@ class TramitesAInicarController extends Controller
             		   $libreDeuda = $value['attributes'];
         	    }
       		}
-		
 		if(isset($libreDeuda['NUMEROLD'])){
 			$libreDeudaHdr = $this->guardarDatosPersonaLibreDeuda($persona, $tramite);
         		$this->guardarDatosLibreDeuda($libreDeuda, $libreDeudaHdr);
-        		$res['res'] = true;
-        		$res['comprobante'] = $libreDeuda['NUMEROLD'];
+			if($libreDeudaHdr->inhabilitado){ //si estÃainhabilitado, no lo dejo pasar
+				$res['res'] = false;
+                        	$res['error'] = "El ciudadano se encuentra inhabilitado por la DGAI";
+                	        $res['request'] = $datos;
+        	                $res['response'] = $array;
+			}else{
+        			$res['res'] = true;
+				$res['comprobante'] = $libreDeuda['NUMEROLD'];
+			}
 		}
     	}
     }else{
@@ -384,6 +390,7 @@ class TramitesAInicarController extends Controller
     $libreDeudaHdr->codigo_postal = $datos['CODIGOPOSTAL'] ? $datos['CODIGOPOSTAL'] : "";
     if($datos['SALDOPUNTOS']) $libreDeudaHdr->saldopuntos = $datos['SALDOPUNTOS'];
     if($datos['CANTIDADVECESLLEGOA0']) $libreDeudaHdr->cantidadvecesllegoa0 = $datos['CANTIDADVECESLLEGOA0'] ;
+    $datos['INHABILITADO'] == 'NO' ? $libreDeudaHdr->inhabilitado = false : $libreDeudaHdr->inhabilitado = true;
     $libreDeudaHdr->save();
     return $libreDeudaHdr;
   }
@@ -583,6 +590,7 @@ class TramitesAInicarController extends Controller
     $tramiteAIniciar->tipo_doc = $tramiteAIniciar->tipoDocSafit();
     
     $conexion = $this->wsSafit->iniciarSesion();
+
     if($conexion->success){
       $res = $this->wsSafit->emitirBoletaVirtualPago($tramiteAIniciar);
       $this->wsSafit->cerrarSesion();
@@ -1110,7 +1118,7 @@ class TramitesAInicarController extends Controller
     $emision = null;
     if($bop_cb < 999999999)
       $emision = EmisionBoletaSafit::where('numero_boleta', $bop_cb)->first();
-    
+
     if ($emision === null) {
       $conexion = $this->wsSafit->iniciarSesion();
       if($conexion->success){

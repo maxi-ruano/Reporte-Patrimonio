@@ -27,6 +27,7 @@ class LibreDeudaHdr extends Model
                          'provincia_text',
                          'codigo_postal',
                          'saldopuntos',
-                         'cantidadvecesllegoa0'
+                         'cantidadvecesllegoa0',
+			 'inhabilitado',
                        ];
 }

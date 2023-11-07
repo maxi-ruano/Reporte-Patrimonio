@@ -26,6 +26,7 @@ class WsClienteSafitController extends Controller
     $this->uswPassword = SafitWS_userPass;
     $this->uswHash = SafitWS_userHash;
     $this->munID = SafitWS_munID;
+\Log::info($this->uswHash);
   }
 
   public function iniciarSesion(){
