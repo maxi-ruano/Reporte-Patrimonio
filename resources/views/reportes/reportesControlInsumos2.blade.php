@@ -79,8 +79,7 @@
 			@endif
                     </select>
                 </div>
-                {{-- <button type="submit" class="btn btn-primary btn-sm">Buscar</button> --}}
-                {{-- <button type="submit" class="btn btn-primary btn-m">Buscar</button> --}}
+         
 
             </div>
 
@@ -154,25 +153,30 @@
 
                 @endcan
 
-                @can('view_action_edit')
+                {{-- @can('view_action_edit') --}}
 
                 <option value="editar_lote">Editar Lote</option>
 
-                @endcan
+                {{-- @endcan --}}
 
 
-                @can('view_action_enable')
+                {{-- @can('view_action_enable') --}}
 
                 <option value="habilitar_lote">Habilitar Lote</option>
 
                 
-                @endcan
+                {{-- @endcan --}}
 
-                @can('view_action_disable')
+                {{-- @can('view_action_disable') --}}
 
                 <option value="deshabilitar_lote">Deshabilitar Lote</option>
 
-                @endcan
+                <option value="recibido">Recibido</option>
+
+                <option value="enviado">Enviado</option>
+
+
+                {{-- @endcan --}}
 
             </select>
 

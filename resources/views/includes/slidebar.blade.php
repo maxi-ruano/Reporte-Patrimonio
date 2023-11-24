@@ -84,6 +84,7 @@
       </li>
      @endcan
 
+
      @canany(['view_insumos','view_insumos_all'])
      <li>
        <a href="{{ route('informe-descartes') }}">
@@ -92,6 +93,31 @@
        </a>
      </li>
     @endcan
+
+
+
+
+
+     {{-- @canany(['view_insumos','view_insumos_all']) --}}
+     <li>
+       <a href="{{ route('reporteLotesPatrminio') }}">
+         <i class="fa fa-file"></i> Reporte Lotes Patrimonio 
+         <span class="fa fa-chevron-down"></span>
+       </a>
+     </li>
+
+     {{-- <li>
+      <a href="{{ route('descartesBlancosPatrimonio') }}">
+        <i class="fa fa-file"></i> Reporte Descartes / Blancos Patrimonio 
+        <span class="fa fa-chevron-down"></span>
+      </a>
+    </li> --}}
+
+    {{-- @endcan --}}
+
+
+
+    
 
     </ul>
   </div>

@@ -11,10 +11,16 @@ use Illuminate\Support\Facades\DB;
 use App\AnsvLotes;
 use App\Tramites;
 use App\AnsvControl;
+use App\AnsvLotesPatrimonio;
+
 use App\AnsvDescartes;
 use App\SysMultivalue;
 use App\User;
 use App\SysUsers;
+use Illuminate\Support\Facades\Auth;
+
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Route;
 
 
 class ReportesController2 extends Controller
@@ -367,7 +373,16 @@ function reporteControlInsumos(Request $request)
     // dd($sucursaless);
 
     $sucursalSeleccionada = $request->sucursal;
-    $Todassucursales = SysMultivalue::where('type', 'SUCU')->get();
+    //$Todassucursales = SysMultivalue::where('type', 'SUCU')->get();
+
+    $ids = [1,10,190,194,195,140,60,50,70,40,160,120,110,192,130,103,100,150,105,180,106,41,131,197];
+
+$Todassucursales = SysMultivalue::where('type', 'SUCU')
+    ->whereIn('id', $ids)
+    ->get();
+
+    // $Todassucursales = SysMultivalue::where('type', 'SUCU') ->get();
+
     $lotesImpresos = [];
     $control_desde = $request->input('control_desde');
   
@@ -452,6 +467,225 @@ function reporteControlInsumos(Request $request)
         'lotesSucursal' => $lotesSucursal,
     ]);
 }
+
+
+public function reporteLotesPatrimonio(Request $request) {
+    $datosLotes = DB::select('SELECT id, nro_control_desde, nro_control_hasta, fecha_recibido_nacion, fecha_habilitado_sede, fecha_recibido_sede, creation_by, modification_date , nro_kit FROM public.ansv_lotes_patrimonio');
+
+    $ids = [1,10,190,194,195,140,60,50,70,40,160,120,110,192,130,103,100,150,105,180,106,41,131,197];
+    $todasSucursales = SysMultivalue::where('type', 'SUCU')
+        ->whereIn('id', $ids)
+        ->get();
+
+        // dd($todasSucursales);
+        return view('patrimonio.reportesControlInsumos2', [
+            'datosLotes' => $datosLotes,
+            'todasSucursales' => $todasSucursales
+        ]);
+
+    // return view('patrimonio.reportesControlInsumos2', ['datosLotes' => $datosLotes]);
+}
+
+
+
+
+// public function asignarLotePatrimonio(Request $request) {
+//     // Validar los datos del formulario según tus necesidades
+
+//     // Obtener el array de selecciones de lotes
+//     $seleccionLotes = $request->input('seleccion');
+
+//     // Obtener la sucursal seleccionada
+//     $sucursalId = $request->input('sucursal');
+
+//     foreach ($seleccionLotes as $loteId) {
+//         $infoLote = AnsvLotesPatrimonio::select('id', 'nro_control_desde', 'nro_control_hasta', 'nro_kit')
+//             ->where('id', $loteId)
+//             ->first();
+
+//         if ($infoLote) {
+//             // Obtener el último lote_id en la tabla ansv_lotes
+//             $ultimoLote = AnsvLotes::latest('lote_id')->first();
+
+//             // Calcular el nuevo lote_id sumándole 1 al último
+//             $nuevoLoteId = $ultimoLote ? $ultimoLote->lote_id + 1 : 1;
+
+//             // Verificar si el rango de control desde y hasta ya existe en ansv_lotes
+//             $existeRango = AnsvLotes::where('control_desde', $infoLote->nro_control_desde)
+//                 ->where('control_hasta', $infoLote->nro_control_hasta)
+//                 ->exists();
+
+//             if (!$existeRango) {
+//                 AnsvLotes::create([
+//                     'lote_id' => $nuevoLoteId,
+//                     'sucursal_id' => $sucursalId,
+//                     'control_desde' => $infoLote->nro_control_desde,
+//                     'control_hasta' => $infoLote->nro_control_hasta,
+//                     'habilitado' => false,
+//                     'created_by' => null,
+//                     'creation_date' => now(),
+//                     'modified_by' => null,
+//                     'modification_date' => now(),
+//                     'end_date' => null,
+//                     'nro_kit' => $infoLote->nro_kit
+//                 ]);
+//             }else {
+//                 return redirect()->back()->withErrors(['error' => 'El rango ya está asignado a una sede.']);
+//             }
+//         }
+//     }
+
+//     return redirect()->back()->with('success', 'Lotes asignados correctamente');
+// }
+
+
+
+public function asignarLotePatrimonio(Request $request) {
+    // Validar los datos del formulario según tus necesidades
+
+    // Obtener el array de selecciones de lotes
+    $seleccionLotes = $request->input('seleccion');
+
+    // Verificar si se seleccionaron lotes antes de intentar el foreach
+    if (!empty($seleccionLotes)) {
+        // Obtener la sucursal seleccionada
+        $sucursalId = $request->input('sucursal');
+
+        foreach ($seleccionLotes as $loteId) {
+            $infoLote = AnsvLotesPatrimonio::select('id', 'nro_control_desde', 'nro_control_hasta', 'nro_kit')
+                ->where('id', $loteId)
+                ->first();
+
+            if ($infoLote) {
+                // Obtener el último lote_id en la tabla ansv_lotes
+                $ultimoLote = AnsvLotes::latest('lote_id')->first();
+
+                // Calcular el nuevo lote_id sumándole 1 al último
+                $nuevoLoteId = $ultimoLote ? $ultimoLote->lote_id + 1 : 1;
+
+                // Verificar si el rango de control desde y hasta ya existe en ansv_lotes
+                $existeRango = AnsvLotes::where('control_desde', $infoLote->nro_control_desde)
+                    ->where('control_hasta', $infoLote->nro_control_hasta)
+                    ->exists();
+
+                if (!$existeRango) {
+                    AnsvLotes::create([
+                        'lote_id' => $nuevoLoteId,
+                        'sucursal_id' => $sucursalId,
+                        'control_desde' => $infoLote->nro_control_desde,
+                        'control_hasta' => $infoLote->nro_control_hasta,
+                        'habilitado' => false,
+                        'created_by' => null,
+                        'creation_date' => now(),
+                        'modified_by' => null,
+                        'modification_date' => now(),
+                        'end_date' => null,
+                        'nro_kit' => $infoLote->nro_kit
+                    ]);
+                } else {
+                    return redirect()->back()->withErrors(['error' => 'El rango ya está asignado a una sede.']);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Lotes asignados correctamente');
+    } else {
+        // Manejar el caso en que no se seleccionaron lotes
+        return redirect()->back()->withErrors(['error' => 'No se han seleccionado lotes para asignar.']);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public function guardarLotePatrimonio(Request $request) {
+    // Validar los datos del formulario según sea necesario
+
+    // Obtener el ID del usuario autenticado
+    $userId = Auth::user()->id;
+
+    // Obtener el rango del nuevo lote
+    $nuevoDesde = $request->input('nro_control_desde');
+    $nuevoHasta = $request->input('nro_control_hasta');
+
+    // Verificar si ya existe un registro con solapamiento en los rangos
+    $existeSolapamiento = DB::table('ansv_lotes_patrimonio')
+        ->where(function ($query) use ($nuevoDesde, $nuevoHasta) {
+            $query->whereBetween('nro_control_desde', [$nuevoDesde, $nuevoHasta])
+                  ->orWhereBetween('nro_control_hasta', [$nuevoDesde, $nuevoHasta]);
+        })
+        ->orWhere(function ($query) use ($nuevoDesde, $nuevoHasta) {
+            $query->where('nro_control_desde', '<=', $nuevoDesde)
+                  ->where('nro_control_hasta', '>=', $nuevoHasta);
+        })
+        ->exists();
+
+    if ($existeSolapamiento) {
+        // Si existe solapamiento, mostrar un mensaje de error y redirigir de nuevo al formulario
+        // return redirect()->back()->withErrors(['error' => 'Ya existe un registro con solapamiento en los rangos de control.'])->withInput();
+        return redirect()->route('cargarLote')->withErrors(['error' => 'Ya existe un registro con solapamiento en los rangos de control.'])->withInput();
+
+    }
+
+    // Si no existe solapamiento, proceder con la inserción
+    DB::table('ansv_lotes_patrimonio')->insert([
+        'nro_control_desde' => $nuevoDesde,
+        'nro_control_hasta' => $nuevoHasta,
+        'fecha_recibido_nacion' => $request->input('fecha_recibido_nacion'),
+        'fecha_habilitado_sede' => $request->input('fecha_habilitado_sede'),
+        'fecha_recibido_sede' => $request->input('fecha_recibido_sede'),
+        'creation_by' => $userId,
+        'modification_date' => $request->input('modification_date'),
+        'nro_kit' => $request->input('nro_kit'),
+    ]);
+
+    // Redirigir a la vista deseada después de una inserción exitosa
+    // return view('patrimonio.cargar_lote');
+    return redirect()->route('cargarLote')->with('success', 'Lote creado correctamente.');
+
+}
+
+
+
+public function sucursalesPatrimonio() {
+    // Obtener todas las sucursales desde la base de datos
+    $ids = [1,10,190,194,195,140,60,50,70,40,160,120,110,192,130,103,100,150,105,180,106,41,131,197];
+    $todasSucursales = SysMultivalue::where('type', 'SUCU')
+        ->whereIn('id', $ids)
+        ->get();
+
+// dd($todasSucursales);
+
+    // Pasar las sucursales a la vista
+    return view('patrimonio.reportesControlInsumos2', ['todasSucursales' => $todasSucursales]);
+}
+
+
+
+
+
+public function CargarLotePatrimonio (Request $request) {
+
+
+    return view('patrimonio.cargar_lote');
+
+}
+
+
+
+
 
 
 
