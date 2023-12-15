@@ -79,8 +79,7 @@
 			@endif
                     </select>
                 </div>
-                {{-- <button type="submit" class="btn btn-primary btn-sm">Buscar</button> --}}
-                {{-- <button type="submit" class="btn btn-primary btn-m">Buscar</button> --}}
+         
 
             </div>
 
@@ -142,50 +141,55 @@
 
 
 
-                {{-- @can('view_action_add') --}}
+                @can('view_action_add')
 
                 <option value="agregar_lote">Agregar Lote</option>
 
-                {{-- @endcan --}}
+                @endcan
 
-                @can('view_action_delete')
+                {{-- @can('view_action_delete') --}}
 
                 <option value="eliminar_lote">Eliminar Lote</option>
 
-                @endcan
+                {{-- @endcan --}}
 
-                @can('view_action_edit')
+                {{-- @can('view_action_edit') --}}
 
                 <option value="editar_lote">Editar Lote</option>
 
-                @endcan
+                {{-- @endcan --}}
 
 
-                @can('view_action_enable')
+                {{-- @can('view_action_enable') --}}
 
                 <option value="habilitar_lote">Habilitar Lote</option>
 
                 
-                @endcan
+                {{-- @endcan --}}
 
-                @can('view_action_disable')
+                {{-- @can('view_action_disable') --}}
 
                 <option value="deshabilitar_lote">Deshabilitar Lote</option>
 
-                @endcan
+                <option value="recibido">Recibido</option>
+
+                <option value="enviado">Enviado</option>
+
+
+                {{-- @endcan --}}
 
             </select>
 
         </div>
 
      
-        @can('view_action_accept')
+        {{-- @can('view_action_accept') --}}
 
 
         <button type="submit"  id="btn-acciones"  class="btn btn-primary acciones-btn" >Aceptar</button> <!-- Agrega un botón de envío para enviar el formulario -->
    
     
-        @endcan
+        {{-- @endcan --}}
 
         @if($errors->has('accion'))
         <div class="alert alert-danger">{{ $errors->first('accion') }}</div>

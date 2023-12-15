@@ -87,6 +87,36 @@ Route::post('/insertar-descarte', 'ReportesControlDescartes@insertarDescarte')->
 Route::post('/consultar-datos', 'ReportesControlDescartes@consultarDatos')->name('consultarDatos');
 
 
+// Lote Patrminio 
+
+Route::get('reporteLotesPatrimonio',['uses' => 'ReportesController2@reporteLotesPatrimonio','as' => 'reporteLotesPatrminio']);
+
+
+Route::get('descartesBlancosPatrimonio',['uses' => 'ReportesController2@descartesBlancosPatrimonio','as' => 'descartesBlancosPatrimonio']);
+
+
+Route::get('/cargar-lote', 'ReportesController2@cargarLotePatrimonio')->name('cargarLote');
+
+Route::post('/cargar-lote', 'ReportesController2@cargarLotePatrimonio')->name('cargarLote');
+
+Route::post('/asignar-lote-patrimonio', 'ReportesController2@asignarLotePatrimonio')->name('asignarLotePatrimonio');
+
+Route::post('/acciones', 'ReportesController2@acciones')->name('acciones');
+
+
+
+// Route::post('/guardar-lote', 'ReportesController2@guardarLotePatrimonio')->name('guardarLote');
+Route::post('/guardar-lote', 'ReportesController2@guardarLotePatrimonio')->name('guardarLote');
+
+
+Route::post('/guardar-descarte', 'ReportesController2@guardarDescartePatrimonio')->name('guardarDescarte');
+
+//SUCURSALES PATRIMONIO 
+
+// routes/web.php
+
+
+
 // HABILITAR LOTE 
 
 // Route::post('/habilitar-lote', 'ReportesController2@ejecutarAccion')->name('ejecutarAccion');
