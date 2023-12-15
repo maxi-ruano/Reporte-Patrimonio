@@ -97,10 +97,15 @@
 
     <br><br>
 
+ 
 
-    <form   action="{{ route('asignarLotePatrimonio') }}" method="POST"> 
+
+    {{-- <form   action="{{ route('asignarLotePatrimonio') }}" method="POST">  --}}
+        <form action="{{ route('acciones') }}" method="POST">
+
         @csrf 
         
+
 
 
         <div class="row">
@@ -124,7 +129,7 @@
         <br><br>
 
 
-        <div class="form-group">
+        {{-- <div class="form-group">
             <label for="acciones">Asignar lote  a Sede :  </label> <br><br>
     
     
@@ -142,13 +147,26 @@
            
     
     
+        </div> --}}
+    
+        <div class="form-group">
+            <label for="acciones">Acciones:</label>
+            <select class="form-control" name="accion" id="accion">
+                <option value="">Seleccionar acción</option>
+                <option value="asignarLote">Asignar Lote</option>
+                <option value="enviarNacion">Enviar Nacion</option>
+                <option value="enviarSede">Enviar Sede</option>
+
+
+                <!-- Agrega más opciones según las acciones que desees -->
+            </select>
         </div>
     
+        <div class="form-group">
+            <button class="btn btn-primary acciones-btn">Ejecutar Acción</button>
+        </div>
     
-    
-
-    
-   
+      
     
       
 
@@ -181,14 +199,16 @@
                                     Checkbox> 
                                 </th>
                                 <th>ID </th>
+                                <th>Sucursal</th>
                                 <th>Control_desde</th>
                                 <th>Control_hasta</th>
                                 <th>Fecha_recibido_nacion</th>
                                 <th>Fecha_recibido_sede</th>
                                 <th>Fecha_habilitado_sede</th>
+                                <th>Fecha_enviado_sede</th>
                                 <th>Fecha_enviado_nacion</th>
 
-                               <th> Modification_date </th>
+                               {{-- <th> Modification_date </th> --}}
                                <th> Nro_Kit</th>
                          
 
@@ -201,26 +221,24 @@
                         </thead>
                         <tbody>
                             <tbody>
-                                @foreach($datosLotes as $lote)
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" name="seleccion[]" value="{{ $lote->id }}" class="checkbox">
-                                        </td>
-                                            
-                                        <td>{{ $lote->id }}</td>
-                                        <td>{{ $lote->nro_control_desde }}</td>
-                                        <td>{{ $lote->nro_control_hasta}}</td>
-                                        <td>{{ $lote->fecha_recibido_nacion}}</td>
-                                        <td>{{ $lote->fecha_recibido_sede}}</td>
-                                        <td>{{ $lote->fecha_habilitado_sede}}</td>
-                                      <td>Enviado Nacion</td>
-                                        {{-- <td>{{ $lote->creation_by}}</td> --}}
-                                        <td>{{ $lote->modification_date}}</td>
-                                        <td>{{ $lote->nro_kit}}</td>
-                                        
+                                @foreach($resultados as $resultado)
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="seleccion[]" value="{{ $resultado->id }}" class="checkbox">
+                                    </td>
+                                    <td>{{ $resultado->id }}</td>
+                                    <td>{{ $resultado->sucursal_description }}</td>
+                                    <td>{{ $resultado->nro_control_desde }}</td>
+                                    <td>{{ $resultado->nro_control_hasta }}</td>
+                                    <td>{{ $resultado->fecha_recibido_nacion }}</td>
+                                    <td>{{ $resultado->fecha_recibido_sede }}</td>
+                                    <td>{{ $resultado->fecha_habilitado_sede }}</td>
+                                    <td>{{ $resultado->fecha_enviado_sede }}</td>
+                                    <td>{{ $resultado->fecha_enviado_nacion }}</td>
+                                    <td>{{ $resultado->nro_kit }}</td>
+                                </tr>
+                            @endforeach
                             
-                                    </tr>
-                                @endforeach
                             </tbody>
                             
                         
@@ -234,69 +252,7 @@
 
 </form>
 
-<!-- Modal Descartes -->
-{{-- <div class="modal fade" id="descartesModal" tabindex="-1" role="dialog" aria-labelledby="descartesModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="descartesModalLabel">Detalle de Descartes</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Lote_id</th>
-                            <th>Patrimonio</th>
-                            <th>Descripcion</th>
-                            <th>Cantidad</th>
-                            <th>Creation_by</th>
-                        </tr>
-                    </thead>
-                    <tbody id="descartesTable"></tbody>
-                </table>
-                <!-- Aquí debes mostrar la información específica para descartes (lote_id, patrimonio, descripcion, cantidad, creation_by) -->
-                <!-- Puedes usar etiquetas HTML o cualquier otro formato que desees -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal Blancos -->
-<div class="modal fade" id="blancosModal" tabindex="-1" role="dialog" aria-labelledby="blancosModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="blancosModalLabel">Detalle de Blancos</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Lote_id</th>
-                            <th>Patrimonio</th>
-                            <th>Descripcion</th>
-                            <th>Cantidad</th>
-                            <th>Creation_by</th>
-                        </tr>
-                    </thead>
-                    <tbody id="blancosTable"></tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div> --}}
 
   
 

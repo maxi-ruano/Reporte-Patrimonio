@@ -40,11 +40,11 @@
                      
                     </div>
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label for="nro_control_hasta"> Fecha_Habilitado_Sede</label>
                         <input type="date" name="fecha_habilitado_sede" id="nro_control_hasta" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
                      
-                    </div>
+                    </div> --}}
 
                     <div class="form-group">
                         <label for="nro_control_hasta">Fecha_Recibido_Sede</label>
@@ -58,11 +58,11 @@
                      
                     </div> --}}
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label for="nro_control_hasta">Modification_Date </label>
                         <input type="date" name="modification_date" id="nro_control_hasta" class="form-control" required>
                      
-                    </div>
+                    </div> --}}
 
                   
                    <div class="form-group">

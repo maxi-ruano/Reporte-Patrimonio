@@ -101,6 +101,9 @@ Route::post('/cargar-lote', 'ReportesController2@cargarLotePatrimonio')->name('c
 
 Route::post('/asignar-lote-patrimonio', 'ReportesController2@asignarLotePatrimonio')->name('asignarLotePatrimonio');
 
+Route::post('/acciones', 'ReportesController2@acciones')->name('acciones');
+
+
 
 // Route::post('/guardar-lote', 'ReportesController2@guardarLotePatrimonio')->name('guardarLote');
 Route::post('/guardar-lote', 'ReportesController2@guardarLotePatrimonio')->name('guardarLote');
