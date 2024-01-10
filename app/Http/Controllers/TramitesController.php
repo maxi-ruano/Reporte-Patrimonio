@@ -75,7 +75,7 @@ class TramitesController extends Controller
       $consulta = [];
 
       //if(in_array($ip, $autorizadas)){
-        if((isset($request->desde) && isset($request->hasta)) || isset($request->nrodoc)){
+        if((isset($request->desde) && isset($request->hasta)) || (isset($request->nrodoc) && isset($request->genero))){
 
           $estado_finalizado = '95';
           $estado_completado = '14';
@@ -132,8 +132,8 @@ class TramitesController extends Controller
                           ->orderby('tramites.fec_inicio','DESC');
 
           //Comrpobar si existe el filtro por Nro. Documento
-          if(isset($request->nrodoc)){
-            $tramites->where('tramites.nro_doc',$request->nrodoc);
+          if(isset($request->nrodoc) && isset($request->genero)){
+            $tramites->where('tramites.nro_doc',$request->nrodoc)->where('tramites.sexo',$request->genero);
             $consulta = $tramites->first();
             if($consulta == NULL)
               $consulta['message'] = "No se encontraron resultados de los datos ingresados.";

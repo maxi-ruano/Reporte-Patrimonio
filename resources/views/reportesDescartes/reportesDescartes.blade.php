@@ -38,17 +38,80 @@
    bottom: 108px;
 }
 
+
+.btn-descartar {
+    display: flex;
+    position: relative;
+    bottom :255px;
+    left : 0px;
+    z-index : 2;
+    font-size : 0px;
+/* Coloca el contenedor a la derecha */
+    
+     /* Ajusta el margen superior según sea necesario */
+}
+.error-control {
+    max-width: 500px; /* Ajusta el ancho máximo según tus necesidades */
+   ; /* Centra el cuadro de error horizontalmente */
+}
+.error-mensaje-control{
+    font-size: 15px;
+}
+
+#datatable-responsive {
+    margin-top: 10px; /* Ajusta el margen superior según sea necesario */
+}
+
+#datatable-responsive th,
+#datatable-responsive td {
+    padding: 5px; /* Ajusta el espaciado en las celdas según sea necesario */
+     font-size: 14px; */
+}
+
+.custom-select-width {
+    width: 300px; /* Ajusta el ancho según sea necesario */
+}
+
+/* Estilo para mostrar "Todos" en el desplegable */
+.custom-select-width option {
+    font-size: 14px; /* Ajusta el tamaño de la fuente según sea necesario */
+}
+
+.pagination{
+display : flex ; 
+position : absolute;  
+left : 120px;
+bottom : 250px;
+z-index; 3
+}
+
+.registros{
+display : flex ;
+position : relative; 
+margin-right : 500px;
+color : red;
+}
+
+
+
+.div-paginacion{
+display:flex;
+position : relative ;
+top : 600px;
+right : 110px;
+
+}
+
+.boton-descartar{
+
+font-size : 16px;
+
+
+
+}
 </style>
 
-<br>
-    <br>
-
-
-
-
-    <!-- page content -->
-    <br>
-    <br>
+<br><br>
 
    
 
@@ -59,7 +122,7 @@
         
       
         <div class="col-md-6">
-            <div class="form-group">
+            <div class="form-group custom-select-width">
                 <label for="control_desde">CONTROL </label>
                 <br><br>
 
@@ -88,28 +151,20 @@
 
 <br>
 
- <div class="form-group">
-    <label for="acciones">DESCARTAR INSUMO :</label>
-    <br><br>
 
 
-    <a href="{{ route('descartarInsumo') }}" class="btn btn-primary btn-m">Descartar</a>
-
-
-</div>
-
-
-<br><br>
+<br>
 
 
 
-
+<div class= "regitros">
 
 @if(request()->has('numero_control'))
     @if(isset($controlBuscado) && $controlBuscado->count() > 0)
+
         <h4>Registros encontrados:</h4>
         <br>
-        <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+        <table id="datatable-responsive"   style="width: 820px" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" >
             <!-- Encabezados de la tabla -->
             <thead>
                 <tr>
@@ -129,19 +184,35 @@
             </tbody>
         </table>
     @else
-        <p>No se encontraron registros para el número de control: {{ request('numero_control') }}</p>
+        <div class="alert alert-danger error-control" role="alert">
+       <p class="error-mensaje-control"> No se encontraron registros para el número de control: {{ request('numero_control') }} </p>
+    </div>
     @endif
 @endif
 
 
+</div>
+
+<div class ="div-paginacion">
 
     <div class="pagination">
         {{ $descartes->links() }}
+ <div class="form-group btn-descartar" >
+    <label for="acciones"> </label>
+    <br><br>
+
+
+    <a href="{{ route('descartarInsumo') }}" class="btn btn-primary btn-m boton-descartar">Descartar</a>
+
+
+</div>
+
+
     </div>
 
+</div>
 
-
-
+<br><br><br><br><br>
 
 
 <br>
@@ -153,12 +224,12 @@
             <div class="x_panel">
                
             <div class="x_content">
-                    <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table id="datatable-responsive"      style="width: 800px" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" >
                         <thead>
                             <tr>
                                 {{-- <th>Checkbox</th> --}}
-                                <th>Nro Insumo</th>
-                                <th>Descripcion</th>
+                                <th style="width: 50px;"  >Nro Insumo</th>
+                                <th style="width: 50px;">Descripcion</th>
                                 {{-- <th>Documento</th>
                                 <th>Tramite </th>
                                  --}}

@@ -54,7 +54,7 @@
   <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">
-        <h2>Log de Pre-Check-Prueba <small></small></h2>
+        <h2>Log de Pre-Check<small></small></h2>
         <ul class="nav navbar-right panel_toolbox">
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
           </li>
@@ -111,38 +111,38 @@
 
   function mostrarPreCheck(precheck, tramite){
       
-      mostrarDatosPersona(tramite);  
-      $('#logPreCheck, #logTurno').empty();
+    mostrarDatosPersona(tramite);  
+    $('#logPreCheck, #logTurno').empty();
       
-      for (var i = 0; i < precheck.length; i++) {
-        crearMensajePrecheck(precheck[i], tramite);
-      }
+    for (var i = 0; i < precheck.length; i++) {
+      crearMensajePrecheck(precheck[i], tramite);
+    }
       
   }
 
   function mostrarDatosPersona(datosPersona){
 
-      //Convertir fecha a dd-mm-yyyy
-      var fecha_nac = '';
-      if(datosPersona.fecha_nacimiento != null){
-        var f = datosPersona.fecha_nacimiento.split('-');
-        fecha_nac = f[2] +"-"+ f[1]+"-"+f[0];
-      }
+    //Convertir fecha a dd-mm-yyyy
+    var fecha_nac = '';
+    if(datosPersona.fecha_nacimiento != null){
+      var f = datosPersona.fecha_nacimiento.split('-');
+      fecha_nac = f[2] +"-"+ f[1]+"-"+f[0];
+    }
 
-      $('#nombre_texto').html(datosPersona.nombre+' '+datosPersona.apellido);
-      $('#documento_texto').html(datosPersona.nro_doc);
-      $('#sexo_texto').html(datosPersona.sexo);
-      $('#fecha_nacimiento_texto').html(fecha_nac);
-      $('#nacionalidad_texto').html(datosPersona.nacionalidad);
-      if(datosPersona.estado == 8)
-        $('#precheck_texto').html('VENCIDO');
-      else
-        $('#precheck_texto').html('VIGENTE');
+    $('#nombre_texto').html(datosPersona.nombre+' '+datosPersona.apellido);
+    $('#documento_texto').html(datosPersona.nro_doc);
+    $('#sexo_texto').html(datosPersona.sexo);
+    $('#fecha_nacimiento_texto').html(fecha_nac);
+    $('#nacionalidad_texto').html(datosPersona.nacionalidad);
+    if(datosPersona.estado == 8)
+      $('#precheck_texto').html('VENCIDO');
+    else
+      $('#precheck_texto').html('VIGENTE');
 
-      if(datosPersona.tramite_dgevyl_id)
-        $('#licta_texto').html(datosPersona.tramite_dgevyl_id);
-      else
-        $('#licta_texto').html('NO INICIADO');
+    if(datosPersona.tramite_dgevyl_id)
+      $('#licta_texto').html(datosPersona.tramite_dgevyl_id);
+    else
+      $('#licta_texto').html('NO INICIADO');
   }
 
   function mostrarMensajeError(error, tramite_habilitado_id){
@@ -159,175 +159,174 @@
     var date = new Date().toISOString().slice(0,10); ;
     var updated = new Date(precheck.updated_at).toISOString().slice(0,10);
   
-      if(precheck.validado){
-          error = '';
-          type = 'success';
-	  verificado = true;
+    if(precheck.validado){
+      error = '';
+      type = 'success';
+	    verificado = true;
 
-	  switch (precheck.description){
-                case 'LIBRE DEUDA':
-		     	precheck_libredeuda = true;
-		     	info = (precheck.comprobante)?'Comprobante Nro. <span class="red">'+precheck.comprobante+' </span> <br>'+precheck.updated_at : '';
-                        break;
-                case 'BUI':
-                        info = (precheck.boleta)? 'Boleta Nro. <span class="red">'+precheck.boleta.nro_boleta+'</span> Importe <span class="red"> $ '+precheck.boleta.importe_total+'</span> Fecha de pago <span class="green"> '+precheck.boleta.fecha_pago+'</span>' : '';
-                        break;
-                case 'EMISION BOLETA SAFIT':
-                         info = (precheck.comprobante)?'Boleta Nro. <span class="red">'+precheck.comprobante+'</span> Importe <span class="red">$'+tramite.bop_monto+'</span> Código <span class="red" style="font-size:10px;">'+tramite.bop_cb+'</span> Fecha de pago <span class="green">'+tramite.bop_fec_pag+'</span>':'';
-                        break;
-		case 'CHARLA VIRTUAL':
-			var aprobado = '';
-			var texto = '';
-			var vencimiento = '';
+      switch (precheck.description){
+        case 'LIBRE DEUDA':
+          precheck_libredeuda = true;
+          info = (precheck.comprobante)?'Comprobante Nro. <span class="red">'+precheck.comprobante+' </span> <br>'+precheck.updated_at : '';
+          break;
+        case 'BUI':
+          info = (precheck.boleta)? 'Boleta Nro. <span class="red">'+precheck.boleta.nro_boleta+'</span> Importe <span class="red"> $ '+precheck.boleta.importe_total+'</span> Fecha de pago <span class="green"> '+precheck.boleta.fecha_pago+'</span>' : '';
+          break;
+        case 'EMISION BOLETA SAFIT':
+          info = (precheck.comprobante)?'Boleta Nro. <span class="red">'+precheck.comprobante+'</span> Importe <span class="red">$'+tramite.bop_monto+'</span> Código <span class="red" style="font-size:10px;">'+tramite.bop_cb+'</span> Fecha de pago <span class="green">'+tramite.bop_fec_pag+'</span>':'';
+          break;
+        case 'CHARLA VIRTUAL':
+          var aprobado = '';
+          var texto = '';
+          var vencimiento = '';
 
-			if(precheck.charla){
-			   if(precheck.charla.aprobado){
-				type = 'success';
-				aprobado = 'Si';
-				if(precheck.charla.fecha_vencimiento < tramite.fecha_turno){
-					type = 'warning';
-					texto = '<span class="red"> <b>SE ENCUENTRA VENCIDA </b></span> <br>';
-				}
-				vencimiento = '<br> Vence: <span class="green">'+precheck.charla.fecha_vencimiento+'</span>';
-			   }else{
-				type = 'danger';
-				aprobado = 'No';
-			   }
+          if(precheck.charla){
+            //  if(precheck.charla.aprobado){
+            type = 'success';
+            aprobado = 'Si';
+            if(precheck.charla.fecha_vencimiento < tramite.fecha_turno){
+              type = 'warning';
+              texto = '<span class="red"> <b>SE ENCUENTRA VENCIDA </b></span> <br>';
+            }
+            vencimiento = '<br> Vence: <span class="green">'+precheck.charla.fecha_vencimiento+'</span>';
+            /*}else{
+              type = 'danger';
+              aprobado = 'No';
+            }*/
 
-			   info = texto+' Código: <span class="red">' + precheck.charla.codigo+'</span>  Aprobado:<b class="red">'+aprobado+'</b> <i class= "fa fa-check-circle fa-lg" style="color:green"></i> <br> Categoria: <span class="red"> '+precheck.charla.categoria+'</span> '+vencimiento;
-			}else{
-				info = 'No se encontró la Charla';
-				type = 'danger';
-			}
-                        break;
-                default:
-                         info = (precheck.comprobante)?'Comprobante Nro. <span class="red">'+precheck.comprobante+'</span><br>'+precheck.updated_at:'';
+            info = texto+' Código: <span class="red">' + precheck.charla.codigo+'</span>  Aprobado:<b class="red">'+aprobado+'</b> <i class= "fa fa-check-circle fa-lg" style="color:green"></i> <br> Categoria: <span class="red"> '+precheck.charla.categoria+'</span> '+vencimiento;
+          }else{
+            info = 'No se encontró la Charla';
+            type = 'danger';
           }
+          break;
+        default:
+          info = (precheck.comprobante)?'Comprobante Nro. <span class="red">'+precheck.comprobante+'</span><br>'+precheck.updated_at:'';
+        }
+
+    }else{
+      var prop = 'description';
+      if (precheck.error){
+        if(precheck.error.description){
+          response_ws = precheck.error.response_ws
+          error =  precheck.error.description
+          verificado = true;
+          console.log(response_ws);
+        }
+      }else{
+        error =  'No verificado';
+        response_ws = '';
+      }
+        
+      //Si tiene un Plan de Pagos mostrar su fecha de vencimiento
+      if(error.toUpperCase().indexOf("PLAN DE PAGO") > -1){
+        var metadata = JSON.parse(precheck.error.response_ws);
+        var data = metadata.filter(metadataObj => metadataObj.tag.indexOf("AUTORIZACION") > -1);
+        var fecha_vencimiento = JSON.stringify(data[0]['attributes']['FECHAVTOLICENCIA']);
+        info = '<span class="red"> Plan de Pago con Fecha Vencimiento: '+fecha_vencimiento+'</span>';
+        type = 'warning';
+        verificado = true;
+        precheck_libredeuda = true;
 
       }else{
-        var prop = 'description';
-        if (precheck.error){
-          if(precheck.error.description){
-            response_ws = precheck.error.response_ws
-            error =  precheck.error.description
-            verificado = true;
-            console.log(response_ws);
-          }
-        }else{
-          error =  'No verificado';
-          response_ws = '';
-        }
-        
-        //Si tiene un Plan de Pagos mostrar su fecha de vencimiento
-        if(error.toUpperCase().indexOf("PLAN DE PAGO") > -1){
-          var metadata = JSON.parse(precheck.error.response_ws);
-          var data = metadata.filter(metadataObj => metadataObj.tag.indexOf("AUTORIZACION") > -1);
-          var fecha_vencimiento = JSON.stringify(data[0]['attributes']['FECHAVTOLICENCIA']);
-          info = '<span class="red"> Plan de Pago con Fecha Vencimiento: '+fecha_vencimiento+'</span>';
+        if(response_ws.toUpperCase().indexOf("PLANPAGO") > -1){
+          var metadata = JSON.parse(response_ws);
+          var data = metadata.filter(metadataObj => metadataObj.tag.indexOf("PLANPAGO") > -1);
+          var fecha_vencimiento = JSON.stringify(data[0]['attributes']['FECHAVTO']);
+          var numero = JSON.stringify(data[0]['attributes']['NUMERO']);
+          info = '<span class="red"> Plan de Pago Nro. '+numero+' con Fecha Vencimiento: '+fecha_vencimiento+'</span>';
           type = 'warning';
           verificado = true;
           precheck_libredeuda = true;
 
         }else{
-          if(response_ws.toUpperCase().indexOf("PLANPAGO") > -1){
-            var metadata = JSON.parse(response_ws);
-            var data = metadata.filter(metadataObj => metadataObj.tag.indexOf("PLANPAGO") > -1);
-            var fecha_vencimiento = JSON.stringify(data[0]['attributes']['FECHAVTO']);
-            var numero = JSON.stringify(data[0]['attributes']['NUMERO']);
-            info = '<span class="red"> Plan de Pago Nro. '+numero+' con Fecha Vencimiento: '+fecha_vencimiento+'</span>';
-            type = 'warning';
-            verificado = true;
+          //SOLO PARA DUPLICADO SE HABILITA PASE SIGUIENTE SECTOR
+          if(precheck.description == 'LIBRE DEUDA' && (tramite.motivo == "DUPLICADO" || tramite.motivo == 'REIMPRESION')){
             precheck_libredeuda = true;
-
+            type = 'warning';
+            info = '<span class="red"> TURNO SOLICITADO POR DUPLICADO  O REIMPRESIÓN</span>';
           }else{
-
-            //SOLO PARA DUPLICADO SE HABILITA PASE SIGUIENTE SECTOR
-            if(precheck.description == 'LIBRE DEUDA' && (tramite.motivo == "DUPLICADO" || tramite.motivo == 'REIMPRESION')){
-              precheck_libredeuda = true;
-              type = 'warning';
-              info = '<span class="red"> TURNO SOLICITADO POR DUPLICADO  O REIMPRESIÓN</span>';
-            }else{
-              info = ((precheck.error) ? precheck.error.created_at : '');
-            }
+            info = ((precheck.error) ? precheck.error.created_at : '');
           }
         }
       }
+    }
 
-      //Agregar onclick solo si no ha iniciado en LICTA, no corresponda a Sinalic
-      var precheckOnclick = '';
-      if(tramite.tramite_dgevyl_id == null && precheck.description != 'SINALIC' && type != 'success' ){
-          precheckOnclick = 'onclick="runPrecheck('+precheck.tramite_a_iniciar_id+','+precheck.validation_id+')" ';
-      }
+    //Agregar onclick solo si no ha iniciado en LICTA, no corresponda a Sinalic
+    var precheckOnclick = '';
+    if(tramite.tramite_dgevyl_id == null && precheck.description != 'SINALIC' && type != 'success' ){
+      precheckOnclick = 'onclick="runPrecheck('+precheck.tramite_a_iniciar_id+','+precheck.validation_id+')" ';
+    }
 	
-      var mostrar = '';
-      if( precheck.description == 'SINALIC' && error == 'No verificado' ){
-      	mostrar = ' style="display:none;" ';
-      }
-      //Boton del Log Prec-Check con su descripcion y fecha de ejecucion o Nro. Comrpobante
-      html = '<li '+mostrar+'>'+
-          '<div class="block_precheck">'+
-          '<div class="tags_precheck">'+
-              '<a id="btn_precheck_'+precheck.validation_id+'" '+precheckOnclick+' class="btn btn-'+type+' btn-xs btn-block">'+
-              '<span>'+precheck.description+'</span>'+
-              '</a>'+
-          '</div>'+
-          '<div class="block_content">'+
-              '<h2 class="title">'+
-                  '<a id="textoValidacion">'+ error +'</a>'+
-              '</h2>'+
-              '<div class="byline">'+
-              '<span>'+info+'</span>'+
-              '</div>'+
+    var mostrar = '';
+    if( precheck.description == 'SINALIC' && error == 'No verificado' ){
+    	mostrar = ' style="display:none;" ';
+    }
+    //Boton del Log Prec-Check con su descripcion y fecha de ejecucion o Nro. Comrpobante
+    html = '<li '+mostrar+'>'+
+        '<div class="block_precheck">'+
+        '<div class="tags_precheck">'+
+            '<a id="btn_precheck_'+precheck.validation_id+'" '+precheckOnclick+' class="btn btn-'+type+' btn-xs btn-block">'+
+            '<span>'+precheck.description+'</span>'+
+            '</a>'+
+        '</div>'+
+        '<div class="block_content">'+
+            '<h2 class="title">'+
+                '<a id="textoValidacion">'+ error +'</a>'+
+            '</h2>'+
+            '<div class="byline">'+
+            '<span>'+info+'</span>'+
+            '</div>'+
 
-          '</div>'+
-          '</div>'+
-      '</li>';
+        '</div>'+
+        '</div>'+
+    '</li>';
 
-      //GENERAR CENAT solo que no este vencido y no este iniciado en licta
-      if(precheck.validation_id == '3' && type=='danger' && error != 'No verificado' && tramite.estado != 8 && tramite.tramite_dgevyl_id == null){
-        var options = '';
-        @foreach ($centrosEmisores as $key => $value)
-          @if($value->safit_cem_id == 1)
-            options += '<option value="{{ $value->safit_cem_id }}" selected="selected"> {{ $value->name }} </option>';
-          @else
-            options += '<option value="{{ $value->safit_cem_id }}"> {{ $value->name }} </option>';
-          @endif
-        @endforeach
+    //GENERAR CENAT solo que no este vencido y no este iniciado en licta
+    if(precheck.validation_id == '3' && type=='danger' && error != 'No verificado' && tramite.estado != 8 && tramite.tramite_dgevyl_id == null){
+      var options = '';
+      @foreach ($centrosEmisores as $key => $value)
+        @if($value->safit_cem_id == 1)
+          options += '<option value="{{ $value->safit_cem_id }}" selected="selected"> {{ $value->name }} </option>';
+        @else
+          options += '<option value="{{ $value->safit_cem_id }}"> {{ $value->name }} </option>';
+        @endif
+      @endforeach
 
-        html+='<h4> <i class="fa fa-chevron-circle-right"></i> Generar CENAT <span class="msjcenat red"></span> </h4>';
-        html+='<div class="col-md-5 col-sm-5 col-xs-12">'+
-              '<input type="number" class="form-control" id="bop_cb" name="bop_cb" aria-describedby="codigoPagoElectronico" placeholder="ID Boleta">'+
-              '</div>';
-        html+='<div class="col-md-5 col-sm-5 col-xs-12">'+
-              '<select id="cem_id" name="cem_id" class="select2_single form-control" data-placeholder="Seleccionar Centro Emisor">'+options+'</select>'+
-              '</div>';
+      html+='<h4> <i class="fa fa-chevron-circle-right"></i> Generar CENAT <span class="msjcenat red"></span> </h4>';
+      html+='<div class="col-md-5 col-sm-5 col-xs-12">'+
+        '<input type="number" class="form-control" id="bop_cb" name="bop_cb" aria-describedby="codigoPagoElectronico" placeholder="ID Boleta">'+
+        '</div>';
+      html+='<div class="col-md-5 col-sm-5 col-xs-12">'+
+        '<select id="cem_id" name="cem_id" class="select2_single form-control" data-placeholder="Seleccionar Centro Emisor">'+options+'</select>'+
+        '</div>';
 
-        html+='<div class="col-md-2 col-sm-2 col-xs-12"> <button type="button" onclick="generarCenat()" class="btn btn-primary btn-block" title="Generar Certificado Virtual"> <i class="fa fa-cloud-download fa-lg"></i> </div>';
-      }
+      html+='<div class="col-md-2 col-sm-2 col-xs-12"> <button type="button" onclick="generarCenat()" class="btn btn-primary btn-block" title="Generar Certificado Virtual"> <i class="fa fa-cloud-download fa-lg"></i> </div>';
+    }
 
-      $('#logPreCheck').append(html);
+    $('#logPreCheck').append(html);
       
-      if (tramite.fecha_paseturno != null){
-        $('#logTurno').html(' <a class="btn btn-success btn-block"><i class="fa fa-check-circle"></i> <span>PASO AL SIGUIENTE SECTOR <b>'+tramite.fecha_paseturno+'</b> </span> </a> ');
-      }else{
-        //RESTRINGIR PASE SIGUIENTE SECTOR
-        if(precheck.description != 'SINALIC'){
-          if(verificado){
-            if(precheck.description == 'LIBRE DEUDA'){
-              if (precheck_libredeuda == true){
-                  $('#logTurno').html(' <a onclick="getPaseTurno('+tramite.id+')" class="btn btn-danger btn-block"><span>SIGUIENTE SECTOR</span> <i class="fa fa-sign-in"></i></a> ');
-              }else{
-                $('#logTurno').append("(*) <span class='red'> Debe verificar "+precheck.description+" </span> <br>");
-              }
+    if (tramite.fecha_paseturno != null){
+      $('#logTurno').html(' <a class="btn btn-success btn-block"><i class="fa fa-check-circle"></i> <span>PASO AL SIGUIENTE SECTOR <b>'+tramite.fecha_paseturno+'</b> </span> </a> ');
+    }else{
+      //RESTRINGIR PASE SIGUIENTE SECTOR
+      if(precheck.description != 'SINALIC'){
+        if(verificado){
+          if(precheck.description == 'LIBRE DEUDA'){
+            if (precheck_libredeuda == true){
+              $('#logTurno').html(' <a onclick="getPaseTurno('+tramite.id+')" class="btn btn-danger btn-block"><span>SIGUIENTE SECTOR</span> <i class="fa fa-sign-in"></i></a> ');
+            }else{
+              $('#logTurno').append("(*) <span class='red'> Debe verificar "+precheck.description+" </span> <br>");
             }
-          }else{
-            $('#logTurno').append("(*) <span class='red'> Debe verificar "+precheck.description+" </span> <br>");
-	    $("#btn_precheck_"+precheck.validation_id).click();
-          }  
-  }
-  }
+          }
+        }else{
+          $('#logTurno').append("(*) <span class='red'> Debe verificar "+precheck.description+" </span> <br>");
+	        $("#btn_precheck_"+precheck.validation_id).click();
+        }  
+      }
+    }
 
-      return verificado;
+    return verificado;
   }
 
   function generarCenat(){

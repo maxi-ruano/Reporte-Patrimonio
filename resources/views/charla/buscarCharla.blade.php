@@ -42,62 +42,29 @@
             </div>
         </form>
 
- <div class="form-group">
-              <label class="control-label col-md-3 col-sm-3 col-xs-12"></label>
-              <div class="col-md-6 col-sm-6 col-xs-12">
-                <button id="enviar" name="enviar" onClick="ajaxCall()" class="btn btn-primary btn-block">Buscar Charla</button>
-              </div>
-<br>
-<br>
-            </div>
+        <div class="form-group">
+          <label class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <button id="enviar" name="enviar" onClick="ajaxCall()" class="btn btn-primary btn-block">Buscar Charla</button>
+          </div>
+          <br>
+          <br>
+        </div>
         <div class="clearfix"></div>
-              </div>
+      </div>
     </div>
   </div>
- </div>
-
+</div>
 
 <div id="response" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"></span></button>
-                <strong></strong>
+
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script>
 
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script> -->
 
-        function ajaxCall() {
-
-                $.ajaxSetup({
-                        headers:{
-                'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')
-                }
-                });
-
-            $.ajax({
-
-                url: 'buscarCharlaPost',
-                type: "POST",
-                data: $("#formulario").serialize()
-            }).done(function(res){
-                let obj = JSON.parse(res);
-                var clase = $('#response').attr('class');
-                if(obj.encontrado == true){
-                        console.log(obj.mensaje);
-                        $('#response').html(obj.mensaje + "<br/>" + "Nombre: " + obj.nombre + "<br/>" + "Apellido: " + obj.apellido + "<br/>" + "Codigo: " + obj.codigo + "<br/>" + "Categoria: " + obj.categoria + "<br/>" + "Vencimiento de charla: " + obj.fechaVencimiento );
-                        $('#response').removeClass('alert alert-danger alert-dismissible fade in');
-                        $('#response').addClass('alert alert-success alert-dismissible fade in');
-                }
-
-                if(obj.encontrado == false){
-                        $('#response').html(obj.mensaje)
-                        $('#response').removeClass('alert alert-success alert-dismissible fade in');
-                        $('#response').addClass('alert alert-danger alert-dismissible fade in');
-                }
-            });
-        }
-    </script>
 </body>
 <!-- /page content -->
+
 @endsection
 
 @push('scripts')
@@ -107,4 +74,39 @@
   <!-- Custom Theme Scripts -->
   <script src="{{ asset('build/js/custom.min.js')}}"></script>
 @endpush
+
+  <script>
+
+    function ajaxCall() {
+
+      $.ajaxSetup({
+        headers:{
+          'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')
+        }
+      });
+
+      $.ajax({
+
+        url: 'buscarCharlaPost',
+        type: "POST",
+        data: $("#formulario").serialize()
+        
+      }).done(function(res){
+        console.log(res);
+        let obj = JSON.parse(res);
+        var clase = $('#response').attr('class');
+
+        if(obj.error == true){
+          $('#response').html(obj.message)
+          $('#response').removeClass('alert alert-success alert-dismissible fade in');
+          $('#response').addClass('alert alert-danger alert-dismissible fade in');
+        }else{
+          $('#response').html('Se encontró una charla' + "<br/>" + "Nombre: " + obj.nombre + "<br/>" + "Apellido: " + obj.apellido + "<br/>" + "Genero: " + obj.genero.toUpperCase() + "<br/>" + "Codigo: " + obj.codigo + "<br/>" + "Categoria: " + obj.categoria + "<br/>" + "Vencimiento de charla: " + obj.vencimiento );
+          $('#response').removeClass('alert alert-danger alert-dismissible fade in');
+          $('#response').addClass('alert alert-success alert-dismissible fade in');
+        }
+        
+      });
+    }
+  </script>
 

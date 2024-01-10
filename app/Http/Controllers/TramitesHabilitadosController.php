@@ -385,7 +385,8 @@ class TramitesHabilitadosController extends Controller
         $data = $this->solicitudDatosStd($ws_fecDes, $ws_fecHas,$ws_estado,$ws_esquema,$ws_metodo);
         $paises = AnsvPaises::all();
 
-
+ \Log::info("antes de foreach");
+ \Log::info($data);
       foreach ($data as $tramite) {
 
           \Log::info("Tramite numero: " . $tramite['numeroTramite']);
@@ -725,9 +726,9 @@ class TramitesHabilitadosController extends Controller
 
     private function obtenerDatosStd($token,$fecDes,$fecHas,$estado,$esquema,$metodo)
     {
-        //$para = "fechaDesde=".$fecDes."&estadoGeneral=".$estado."&estadoDelEsquema=".$esquema; 
+        $para = "fechaDesde=".$fecDes."&estadoGeneral=".$estado."&estadoDelEsquema=".$esquema."&numeroTramite=00002166/23"; 
             //echo $para.PHP_EOL;
-        $para = "fechaDesde=".$fecDes."&fechaHasta=".$fecHas."&estadogeneral=".$estado."&estadoDelEsquema=".$esquema;
+        //$para = "fechaDesde=".$fecDes."&fechaHasta=".$fecHas."&estadogeneral=".$estado."&estadoDelEsquema=".$esquema;
             //echo $para.PHP_EOL;
                 $curl = curl_init();
                 //Homologacion

@@ -51,14 +51,14 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Descartado: <span id="descartado"></span></p>
-                                    <p>En uso : <span id="enuso"></span></p>
-                                    <p>Tramite_id: <span id="tramite_id"></span></p>
-                                    <p>Sucursal_id: <span id="sucursal_id"></span></p>
-                                    <p>Nombre: <span id="nombre"></span></p>
-                                    <p>Apellido: <span id="apellido"></span></p>
-                                    <p>Género: <span id="genero"></span></p>
-                                    <p>DNI: <span id="documento"></span></p>
+                                    <p > <strong>Descartado:</strong> <span id="descartado"></span></p>
+                                    <p > <strong>  En uso :</strong> <span id="enuso"></span></p>
+                                    <p><strong>Tramite_id:</strong> <span id="tramite_id"></span></p>
+                                    <p><strong>Sucursal_id:</strong> <span id="sucursal_id"></span></p>
+                                    <p><strong>Nombre: </strong> <span id="nombre"></span></p>
+                                    <p><strong>Apellido:</strong> <span id="apellido"></span></p>
+                                    <p><strong>Género:</strong> <span id="genero"></span></p>
+                                    <p><strong>DNI:</strong> <span id="documento"></span></p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -158,6 +158,24 @@
 
 
 
+
+ 
+<script>
+    $(document).ready(function () {
+        // Evento que se ejecuta cuando el modal se muestra
+        $('#miModal').on('show.bs.modal', function (event) {
+            // Obtén el valor de descartado
+            var descartado = $('#descartado').text().trim().toLowerCase();
+
+            // Deshabilita el botón si descartado es 'si'
+            if (descartado === 'si') {
+                $('#confirmarDatos').prop('disabled', true);
+            } else {
+                $('#confirmarDatos').prop('disabled', false);
+            }
+        });
+    });
+</script>
 
 
 

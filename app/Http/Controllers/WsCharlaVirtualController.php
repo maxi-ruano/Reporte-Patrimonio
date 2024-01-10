@@ -12,11 +12,13 @@ class WsCharlaVirtualController extends Controller
     private $userName;
     private $userPassword;
     private $wsEnabled;
+    private $wsKey;
     
     public function __construct(){
       $this->crearConstantes();
       $this->url = CharlaVirtualWS_ws_url;
       $this->wsEnabled = CharlaVirtualWS_enabled;
+      $this->wsKey = CharlaVirtualWS_ws_key;
     }
 
     public function consultar($tramite)
@@ -26,23 +28,28 @@ class WsCharlaVirtualController extends Controller
         $response = '';
         try {
             
-	    $request 	= $this->url."/documento/".$tramite->nro_doc."/genero/".strtolower($tramite->sexo);
-	    $json 	= file_get_contents($request, false);
+	    $request 	= $this->url.$tramite->nro_doc."/".strtolower($tramite->sexo);
+	    $options = array(
+		'http' =>  array(
+	        	'header'=> 'api_key: ' . $this->wsKey,
+	    	)
+	    );
+		
+	    $json 	= file_get_contents($request, false, stream_context_create($options));
 	    $response 	= json_decode($json);
 
-	    if($response->error->err == true){
-		$message = $response->error->message;
+	    if(isset($response->error)){
+		$message = $response->message;
 	    }else{
-		    
-		$message = isset($response->mensaje)?$response->mensaje:'';    
+		// $message = isset($response->mensaje)?$response->mensaje:'';    
 		
-		if($response->encontrado){    
-		    if($response->codigo != null && $response->codigo != '' && $response->codigo != '0' ){    
+		//if($response->encontrado){    
+		    if( isset($response->codigo) ){    
 			$success = true;
 		    }else{
 			$message = 'Código incorrecto: La charla no fue finalizada o aprobada con exito';
 		    }
-		}
+		//}
 	    }
         }catch(\Exception $e) {
             $message = $e->getMessage();
@@ -64,16 +71,16 @@ class WsCharlaVirtualController extends Controller
 	    if(!$existe){
 		CharlaVirtual::create([  
 			'codigo' 		=> $codigo,
-			'nro_doc' 		=> $charla->documento,
+			'nro_doc' 		=> $charla->dni,
 			'apellido'		=> $charla->apellido,
 			'nombre'		=> $charla->nombre,
 			'sexo' 			=> $charla->genero,
-			'email'			=> $charla->email,
-			'aprobado'		=> $charla->aprobado,
-			'fecha_nacimiento'	=> $charla->fechaNacimiento,
-			'fecha_charla'		=> $charla->fechaIngreso,
-			'fecha_aprobado'	=> $charla->fechaAprobado,
-			'fecha_vencimiento'	=> $charla->fechaVencimiento,
+			'email'			=> ' ',
+			'aprobado'		=> true,
+			'fecha_nacimiento'	=> $charla->fecha_nacimiento,
+			'fecha_charla'		=> $charla->inicio_el,
+			'fecha_aprobado'	=> $charla->finalizo_el,
+			'fecha_vencimiento'	=> $charla->vencimiento,
 			'categoria'		=> $charla->categoria,
 			'response_ws'		=> json_encode($charla)
 		]);
@@ -89,14 +96,14 @@ class WsCharlaVirtualController extends Controller
 
 
 
-	public function buscarCharlaPost()
+	public function buscarCharlaPost(Request $request)
 	{
-		$nro_doc = $_POST['nro_doc'];
-		$sexo = $_POST['sexo'];
+		$nro_doc = $request->nro_doc;
+		$sexo = $request->sexo;
 		$curl = curl_init();
 
 		curl_setopt_array($curl, array(
-			CURLOPT_URL => 'https://transito.buenosaires.gob.ar/api-charlavirtual/v1/charlas/documento/'.$nro_doc.'/genero/'.$sexo.'',
+			CURLOPT_URL => $this->url.$nro_doc."/".strtolower($sexo),
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_ENCODING => '',
 			CURLOPT_MAXREDIRS => 10,
@@ -105,7 +112,7 @@ class WsCharlaVirtualController extends Controller
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 			CURLOPT_CUSTOMREQUEST => 'GET',
 			CURLOPT_HTTPHEADER => array(
-				'Cookie: BIGipServerPool_especiales-web=184685578.20480.0000'
+				'api_key: ' . $this->wsKey
 			),
 		));
 

@@ -171,9 +171,7 @@
 
                 <option value="deshabilitar_lote">Deshabilitar Lote</option>
 
-                <option value="recibido">Recibido</option>
-
-                <option value="enviado">Enviado</option>
+                
 
 
                 {{-- @endcan --}}

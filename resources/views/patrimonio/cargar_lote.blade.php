@@ -24,31 +24,31 @@
  
                     <div class="form-group">
                         <label for="nro_control_desde">Nro Control Desde:</label>
-                        <input type="number" name="nro_control_desde" id="nro_control_desde" class="form-control" required>
+                        <input type="number" name="nro_control_desde" id="nro_control_desde" class="form-control" required >
                      
                     </div>
 
                     <div class="form-group">
                         <label for="nro_control_hasta">Nro Control Hasta:</label>
-                        <input type="number" name="nro_control_hasta" id="nro_control_hasta" class="form-control" required>
+                        <input type="number" name="nro_control_hasta" id="nro_control_hasta" class="form-control" required >
                      
                     </div>
 
                     <div class="form-group">
                         <label for="nro_control_hasta"> Fecha Recibido_Nacion</label>
-                        <input type="date" name="fecha_recibido_nacion" value="{{ now()->format('Y-m-d') }}" class="form-control" required>
+                        <input type="date" name="fecha_recibido_nacion" " class="form-control"  required>
                      
                     </div>
 
                     {{-- <div class="form-group">
                         <label for="nro_control_hasta"> Fecha_Habilitado_Sede</label>
-                        <input type="date" name="fecha_habilitado_sede" id="nro_control_hasta" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                        <input type="date" name="fecha_habilitado_sede" id="nro_control_hasta" class="form-control"  >
                      
                     </div> --}}
 
                     <div class="form-group">
                         <label for="nro_control_hasta">Fecha_Recibido_Sede</label>
-                        <input type="date" name="fecha_recibido_sede" id="nro_control_hasta" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                        <input type="date" name="fecha_recibido_sede" id="nro_control_hasta" class="form-control" required  >
                      
                     </div>
 
@@ -60,7 +60,7 @@
 
                     {{-- <div class="form-group">
                         <label for="nro_control_hasta">Modification_Date </label>
-                        <input type="date" name="modification_date" id="nro_control_hasta" class="form-control" required>
+                        <input type="date" name="modification_date" id="nro_control_hasta" class="form-control" >
                      
                     </div> --}}
 
@@ -74,6 +74,14 @@
                 
                     
                     <button type="submit" class="btn btn-primary">Crear Lote</button>
+
+              @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+
                 </form>
             </div>
         </div>
