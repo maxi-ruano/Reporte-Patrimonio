@@ -89,7 +89,11 @@ Route::post('/consultar-datos', 'ReportesControlDescartes@consultarDatos')->name
 
 // Lote Patrminio 
 
-Route::get('reporteLotesPatrimonio',['uses' => 'ReportesController2@reporteLotesPatrimonio','as' => 'reporteLotesPatrminio']);
+// Route::get('reporteLotesPatrimonio',['uses' => 'ReportesController2@reporteLotesPatrimonio','as' => 'reporteLotesPatrminio']);
+
+// Route::post('reporteLotesPatrimonio',['uses' => 'ReportesController2@reporteLotesPatrimonio','as' => 'reporteLotesPatrminio']);
+
+Route::match(['get', 'post'], 'reporteLotesPatrimonio', 'ReportesController2@reporteLotesPatrimonio')->name('reporteLotesPatrminio');
 
 
 Route::get('descartesBlancosPatrimonio',['uses' => 'ReportesController2@descartesBlancosPatrimonio','as' => 'descartesBlancosPatrimonio']);
@@ -101,7 +105,14 @@ Route::post('/cargar-lote', 'ReportesController2@cargarLotePatrimonio')->name('c
 
 Route::post('/asignar-lote-patrimonio', 'ReportesController2@asignarLotePatrimonio')->name('asignarLotePatrimonio');
 
+Route::get('patrimonioBlancosDescartes',['uses' => 'ReportesController2@patrimonioBlancosDescartes','as' => 'patrimonioBlancosDescartes']);
+
+
 Route::post('/acciones', 'ReportesController2@acciones')->name('acciones');
+
+Route::post('/acciones-descartes-blancos', 'ReportesController2@accionesDescartesBlancos')->name('accionesDescartesBlancos');
+
+Route::get('/mostrar-datos', 'ReportesController2@mostrarDatos')->name('mostrarDatos');
 
 
 

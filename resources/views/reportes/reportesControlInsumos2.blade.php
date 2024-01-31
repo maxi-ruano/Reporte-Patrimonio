@@ -782,6 +782,7 @@ $(document).ready(function() {
                 $('#numeroKit').text(response.numeroKit);
 
                 var blancos = response.blancos;
+                console.log(blancos);
                 var blancosTableBody = $('#blancosTableBody');
                 blancosTableBody.empty();
 

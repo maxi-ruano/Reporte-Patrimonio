@@ -19,6 +19,7 @@ use App\SysMultivalue;
 use App\User;
 use App\SysUsers;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
@@ -123,7 +124,6 @@ class ReportesController2 extends Controller
                 $request->session()->flash('warning', 'Por favor, selecciona al menos un lote antes de realizar la acción.');
                 return redirect()->route('reporte.control.insumos');
             }
-            // return view('reportes.editar_lote', compact('selectedItems'));
             $lote_id = $selectedItems[0];
             return redirect()->route('editar.lote', ['lote_id' => $lote_id]);
 
@@ -137,7 +137,6 @@ class ReportesController2 extends Controller
 
     public function guardarLote(Request $request)
     {
-        // Validar los datos del formulario (opcional, pero recomendado)
     
         $controlDesde = $request->input('nro_control_desde');
         $controlHasta = $request->input('nro_control_hasta');
@@ -166,7 +165,6 @@ class ReportesController2 extends Controller
             return view('reportes.crear_lote', compact('sucursaless', 'Todassucursales', 'sucursalSeleccionada', 'error2'));
         }
     
-        // Continuar con la creación del lote si no hay superposiciones
         $nextLoteId = DB::table('ansv_lotes')->max('lote_id') + 1;
     
         $data = [
@@ -184,35 +182,28 @@ class ReportesController2 extends Controller
             'nro_caja' => $request->input('nro_caja'),
         ];
     
-        // Insertar los datos en la tabla ansv_lotes
         DB::table('ansv_lotes')->insert($data);
     
-        // Redirigir a la página de éxito o a donde desees después de guardar el lote
         return redirect()->route('reporte.control.insumos')->with('success', 'Lote creado correctamente');
     }
 
 
     public function editarLote($lote_id)
     {
-        // Recupera el lote que se va a editar
         $lote = AnsvLotes::find($lote_id);
         return view('reportes.editar_lote', compact('lote'));
     }
 
     public function actualizarLote(Request $request, $lote_id)
     {
-        // Encuentra el lote que se va a actualizar
         $lote = AnsvLotes::find($lote_id);
     
-        // Actualiza los campos con los valores enviados desde el formulario
         $lote->control_desde = $request->input('nro_control_desde');
         $lote->control_hasta = $request->input('nro_control_hasta');
         $lote->nro_kit = $request->input('nro_kit');
     
-        // Guarda los cambios en la base de datos
         $lote->save();
     
-        // Redirige a la vista de edición con un mensaje de éxito
         return redirect()->route('reporte.control.insumos')->with('success', 'Lote creado correctamente');
     }
     
@@ -228,10 +219,8 @@ class ReportesController2 extends Controller
 
         $sucursaless = $sucursaless->get();
 
-        // dd($sucursaless);
 
         $sucursalSeleccionada = $request->sucursal;
-        //$Todassucursales = SysMultivalue::where('type', 'SUCU')->get();
         $ids = [1,10,190,194,195,140,60,50,70,40,160,120,110,192,130,103,100,150,105,180,106,41,131,197];
         $Todassucursales = SysMultivalue::where('type', 'SUCU')
         ->whereIn('id', $ids)
@@ -254,7 +243,6 @@ class ReportesController2 extends Controller
             ->orderByDesc('lote_id');
 
 
-        // Filtrar por número de kit si se ha proporcionado
         if ($request->numero_kit) {
             $numeroKit = $request->numero_kit;
             $lotesSucursalQuery->where('nro_kit', $numeroKit);
@@ -274,7 +262,7 @@ class ReportesController2 extends Controller
 
             $cantidadImpresos = AnsvControl::whereBetween('nro_control', [$lote->control_desde, $lote->control_hasta])
                 ->where('liberado', 'false')
-                ->whereNotIn('nro_control', $descartados->pluck('control')) // Excluir los descartes de la consulta
+                ->whereNotIn('nro_control', $descartados->pluck('control')) 
                 ->count('nro_control');
 
             $cantidadBlancos = $cantidadLote - ($cantidadImpresos + $cantidadDescartados);
@@ -282,7 +270,7 @@ class ReportesController2 extends Controller
             $nroKit = $lote->getAttribute('nro_kit');
             $nroCaja = $lote->getAttribute('nro_caja');
 
-            // dd($habilitado);
+           
 
             $lotesImpresos[] = [
                 'sucursal' => $sucursaless->where('id', $lote->sucursal_id)->first()->description,
@@ -314,17 +302,26 @@ class ReportesController2 extends Controller
     }
 
 
+
     public function reporteLotesPatrimonio(Request $request) {
-
-        $datosLotes = AnsvLotesPatrimonio::orderBy('id', 'desc')->paginate(10); // Ajusta el número según tus necesidades
-
-        // Inicializar un array para almacenar la información de cada lote
+        $query = AnsvLotesPatrimonio::orderBy('id', 'desc');
+    
+        // Aplicar filtro si se envía el parámetro de búsqueda
+        if ($request->filled('kit')) {
+            $kit = $request->input('kit');
+            $query->where('nro_kit', $kit);
+        }
+    
+        // Obtener los resultados paginados
+        $datosLotes = $query->paginate(10);
+    
+        // Resto del código para obtener los resultados y las sucursales
         $resultados = [];
-
+    
         foreach ($datosLotes as $lote) {
             $nroControlDesde = $lote->nro_control_desde;
             $nroControlHasta = $lote->nro_control_hasta;
-
+    
             $resultado = AnsvLotesPatrimonio::select(
                 'ansv_lotes_patrimonio.*',
                 'ansv_lotes.*',
@@ -342,39 +339,97 @@ class ReportesController2 extends Controller
                 ->where('nro_control_desde', '=', $nroControlDesde)
                 ->where('nro_control_hasta', '=', $nroControlHasta)
                 ->first();
-
-
+    
             if ($resultado && $resultado->fecha_habilitado_sede !== null) {
                 $resultado->fecha_habilitado_sede = Carbon::parse($resultado->fecha_habilitado_sede)->format('Y-m-d H:i:s');
             }
             $resultados[] = $resultado;
-
         }
-
+    
         $ids = [1,10,190,194,195,140,60,50,70,40,160,120,110,192,130,103,100,150,105,180,106,41,131,197];
         $todasSucursales = SysMultivalue::where('type', 'SUCU')
             ->whereIn('id', $ids)
             ->get();
-
-
+    
         return view('patrimonio.reportesControlInsumos2', [
             'resultados' => $resultados,
             'todasSucursales' => $todasSucursales,
             'datosLotes' => $datosLotes,
         ]);
     }
+    
+
+
+    
+
+    // public function reporteLotesPatrimonio(Request $request) {
+
+        
+
+    //     $datosLotes = AnsvLotesPatrimonio::orderBy('id', 'desc')->paginate(10); 
+
+    
+    //     $resultados = [];
+
+    //     foreach ($datosLotes as $lote) {
+    //         $nroControlDesde = $lote->nro_control_desde;
+    //         $nroControlHasta = $lote->nro_control_hasta;
+
+    //         $resultado = AnsvLotesPatrimonio::select(
+    //             'ansv_lotes_patrimonio.*',
+    //             'ansv_lotes.*',
+    //             'sys_multivalue.description as sucursal_description',
+    //             'ansv_lotes_patrimonio.nro_kit'
+    //         )
+    //             ->leftJoin('ansv_lotes', function ($join) use ($nroControlDesde, $nroControlHasta) {
+    //                 $join->on('nro_control_desde', '=', 'ansv_lotes.control_desde')
+    //                     ->on('nro_control_hasta', '=', 'ansv_lotes.control_hasta');
+    //             })
+    //             ->leftJoin('sys_multivalue', function ($join) {
+    //                 $join->on('sucursal_id', '=', 'sys_multivalue.id')
+    //                     ->where('sys_multivalue.type', '=', 'SUCU');
+    //             })
+    //             ->where('nro_control_desde', '=', $nroControlDesde)
+    //             ->where('nro_control_hasta', '=', $nroControlHasta)
+    //             ->first();
+
+
+    //         if ($resultado && $resultado->fecha_habilitado_sede !== null) {
+    //             $resultado->fecha_habilitado_sede = Carbon::parse($resultado->fecha_habilitado_sede)->format('Y-m-d H:i:s');
+    //         }
+    //         $resultados[] = $resultado;
+
+    //     }
+
+    //     $ids = [1,10,190,194,195,140,60,50,70,40,160,120,110,192,130,103,100,150,105,180,106,41,131,197];
+    //     $todasSucursales = SysMultivalue::where('type', 'SUCU')
+    //         ->whereIn('id', $ids)
+    //         ->get();
+
+
+    //     return view('patrimonio.reportesControlInsumos2', [
+    //         'resultados' => $resultados,
+    //         'todasSucursales' => $todasSucursales,
+    //         'datosLotes' => $datosLotes,
+    //     ]);
+    // }
+
+   
+
+
+
+
+
 
 
     public function acciones(Request $request)
     {
-        // Validar los datos del formulario según tus necesidades
-        // Obtener la acción seleccionada
+       
         $accion = $request->input('accion');
         $sucursalId = $request->input('sucursal');
         $seleccionLotes = $request->input('seleccion');
 
         if (empty($seleccionLotes)) {
-            // Manejar el caso en que no se seleccionaron lotes
             return redirect()->back()->with(['custom_error' => 'No se han seleccionado lotes para asignar.'])->withInput();
         }
 
@@ -389,12 +444,9 @@ class ReportesController2 extends Controller
 
         if ($accion === 'asignarLote') {
 
-            //  dd("asignarLote");
             $seleccionLotes = $request->input('seleccion');
 
-            // Verificar si se seleccionaron lotes antes de intentar el foreach
             if (!empty($seleccionLotes)) {
-                // Obtener la sucursal seleccionada
                 $sucursalId = $request->input('sucursal');
         
                 foreach ($seleccionLotes as $loteId) {
@@ -404,13 +456,10 @@ class ReportesController2 extends Controller
                         ->first();
 
                     if ($infoLote) {
-                        // Obtener el último lote_id en la tabla ansv_lotes
                         $ultimoLote = AnsvLotes::latest('lote_id')->first();
 
-                        // Calcular el nuevo lote_id sumándole 1 al último
                         $nuevoLoteId = $ultimoLote ? $ultimoLote->lote_id + 1 : 1;
         
-                        // Verificar si el rango de control desde y hasta ya existe en ansv_lotes
                         $existeRango = AnsvLotes::where('control_desde', $infoLote->nro_control_desde)
                             ->where('control_hasta', $infoLote->nro_control_hasta)
                             ->exists();
@@ -438,64 +487,300 @@ class ReportesController2 extends Controller
         
                 return redirect()->back()->with('success', 'Lotes asignados correctamente')->withInput();
             } else {
-                // Manejar el caso en que no se seleccionaron lotes
                 return redirect()->back()->with(['custom_error' => 'No se han seleccionado lotes para asignar.'])->withInput();
             }
 
         }
         
-        if($accion === 'enviarNacion'){
+        if($accion === 'enviarSede'){
             $seleccionLotes = $request->input('seleccion');
 
             if (!empty($seleccionLotes)) {
             
                 $lotesEnviados = AnsvLotesPatrimonio::whereIn('id', $seleccionLotes)
-                ->whereNotNull('fecha_enviado_nacion')
-                ->count();
-
-                if ($lotesEnviados > 0) {
-                    return redirect()->back()->with(['custom_error' => 'El lote ya fue enviado a Nacion.'])->withInput();
-                }
-
-                AnsvLotesPatrimonio::whereIn('id', $seleccionLotes)
-                ->whereNull('fecha_enviado_nacion') // Agrega esta condición
-                ->update(['fecha_enviado_nacion' => Carbon::now()]);
-
-                return redirect()->back()->with('success', 'Lotes enviados a Nación correctamente');
-            } else {
-                return redirect()->back()->with(['custom_error' => 'No se han seleccionado lotes para enviar a Nación.'])->withInput();
-            }
-        }
-    
-        if($accion === 'enviarSede'){
-            $seleccionLotes = $request->input('seleccion');
-
-            if (!empty($seleccionLotes)) {
-
-                $lotesEnviados = AnsvLotesPatrimonio::whereIn('id', $seleccionLotes)
                 ->whereNotNull('fecha_enviado_sede')
                 ->count();
 
                 if ($lotesEnviados > 0) {
-                    return redirect()->back()->with(['custom_error' => 'El lote ya fue enviado a la Sede.'])->withInput();
+                    return redirect()->back()->with(['custom_error' => 'El lote ya fue enviado a Sede.'])->withInput();
                 }
 
                 AnsvLotesPatrimonio::whereIn('id', $seleccionLotes)
-                ->whereNull('fecha_enviado_sede') // Agrega esta condición
+                ->whereNull('fecha_enviado_sede') 
                 ->update(['fecha_enviado_sede' => Carbon::now()]);
 
-                    return redirect()->back()->with('success', 'Lotes enviados a Sede correctamente');
+                return redirect()->back()->with('success', 'Lotes enviados a sede correctamente');
             } else {
-                return redirect()->back()->with(['custo_error' => 'No se han seleccionado lotes para enviar a Sede.'])->withInput();
+                return redirect()->back()->with(['custom_error' => 'No se han seleccionado lotes para enviar a Sede .'])->withInput();
             }
+        }
+    
+        if($accion === 'enviarNacion'){
+            $seleccionLotes = $request->input('seleccion');
+
+            $descartesPatrimonio1 = AnsvLotesPatrimonio::whereIn('id', $seleccionLotes)
+            ->get();
+$ansvLotesPatrimonio = $descartesPatrimonio1->first();
+
+$nroControlDesde = $ansvLotesPatrimonio->nro_control_desde;
+$nroControlHasta = $ansvLotesPatrimonio->nro_control_hasta;
+$nro_kit = $ansvLotesPatrimonio->nro_kit;
+
+       $descartesPatrimonio = DB::table('ansv_descartes')
+      ->select('control', 'motivo', 'descripcion', 'creation_date', 'created_by', 'end_date')
+    ->whereBetween('control', [$nroControlDesde, $nroControlHasta])
+    ->get();
+
+    $descartesBlancosPatrimonio = [];
+
+foreach ($descartesPatrimonio as $descarte) {
+    $control = $descarte->control;
+    $motivo = $descarte->motivo;
+    $descripcion = $descarte->descripcion;
+
+    $cantidadLote = $nroControlHasta - $nroControlDesde + 1;
+
+            
+    $cantidadDescartados = $descartesPatrimonio->count();
+
+
+    $descartados = AnsvDescartes::whereBetween('control', [$nroControlDesde, $nroControlHasta])
+    ->distinct()
+    ->get(['control']);
+
+
+
+    $cantidadImpresos = AnsvControl::whereBetween('nro_control', [$nroControlDesde,$nroControlHasta])
+    ->where('liberado', 'false')
+    ->whereNotIn('nro_control', $descartados->pluck('control')) 
+    ->count('nro_control');
+
+
+
+
+   $codificados = AnsvControl::whereBetween('nro_control', [$nroControlDesde, $nroControlHasta])
+    ->where('liberado', false)
+    ->pluck('nro_control');
+
+  
+
+
+   $descartesBlancosPatrimonio[] = [
+        
+        'controlDescartado' => $control,
+        'motivoDescartado' => $motivo,
+        'descripcionDescartado' => $descripcion,
+        
+        
+    ];
+
+
+
+
+}
+
+$blancos = [];
+
+$descartados2 = AnsvDescartes::whereBetween('control', [$nroControlDesde, $nroControlHasta])
+->distinct()
+->get(['control']);
+
+
+$codificados = AnsvControl::whereBetween('nro_control', [$nroControlDesde, $nroControlHasta])
+->where('liberado', false)
+->pluck('nro_control');
+
+
+for ($i = $nroControlDesde; $i <= $nroControlHasta; $i++) {
+    if (!$descartados2->contains('control', $i) && !$codificados->contains($i)) {
+        
+        $blancos[] = $i;
+    }else{
+        $blancos = [];
+
+    }
+}
+ 
+
+
+
+         
+            return $this->mostrarVista3($descartesBlancosPatrimonio,$blancos, $nro_kit);
+
+
+
+
+         
+
         
         }
     }
 
 
+    public function mostrarVista3($descartesBlancosPatrimonio,$blancos, $nro_kit)
+
+    {
+
+        $controlesGuardados = DB::table('patrimonioenviadonacion')->pluck('control')->toArray();
+
+
+session(['controlesGuardados' => $controlesGuardados]);
+
+
+        return Redirect::route('patrimonioBlancosDescartes')->with([
+            'descartesBlancosPatrimonio' => $descartesBlancosPatrimonio,
+             'blancos' => $blancos,
+
+            'nro_kit' => $nro_kit,
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public function accionesDescartesBlancos(Request $request) {
+    $nroKit = $request->input('nro_kit');
+
+    $seleccionDescartes = (array) $request->input('seleccion_descartes');
+    $seleccionBlancos = (array) $request->input('seleccion_blancos');
+
+    // Insertar registros de descartes
+    foreach ($seleccionDescartes as $controlDescarte) {
+        DB::table('patrimonioenviadonacion')->insert([
+            'control' => $controlDescarte,
+            'blanco_descarte' => 1,
+            'nro_kit' => $nroKit, 
+        ]);
+
+        $this->registrarLog($nroKit);
+    }
+
+    foreach ($seleccionBlancos as $controlBlanco) {
+        DB::table('patrimonioenviadonacion')->insert([
+            'control' => $controlBlanco,
+            'blanco_descarte' => 2, 
+            'nro_kit' => $nroKit,
+        ]);
+
+        $this->registrarLog($nroKit);
+    }
+
+    $lotesEnviados = AnsvLotesPatrimonio::where('nro_kit', $nroKit)
+        ->whereNotNull('fecha_enviado_nacion')
+        ->count();
+
+    if ($lotesEnviados === 0) {
+        AnsvLotesPatrimonio::where('nro_kit', $nroKit)
+            ->whereNull('fecha_enviado_nacion')
+            ->update(['fecha_enviado_nacion' => Carbon::now()]);
+    }
+
+    return redirect()->route('reporteLotesPatrminio')->with('success', 'Se guardo exitosamente los descartes/blancos');
+}
+
+private function registrarLog( $nroKit) {
+    DB::table('ansv_lotes_patrimonio_log')->insert([
+        'nro_kit' => $nroKit,
+        'fecha_registro' => Carbon::now(),
+    ]);
+}
+
+
+
+
+
+
+public function mostrarDatos(Request $request)
+{
+    $nroKit = $request->input('nro_kit');
+
+    $descartes = DB::table('patrimonioenviadonacion')
+        ->where('blanco_descarte', 1)
+        ->where('nro_kit', $nroKit)
+        ->get();
+
+    $blancos = DB::table('patrimonioenviadonacion')
+        ->where('blanco_descarte', 2)
+        ->where('nro_kit', $nroKit)
+        ->get();
+
+    $resultados = DB::table('patrimonioenviadonacion as pe')
+        ->join('ansv_lotes as al', 'pe.nro_kit', '=', 'al.nro_kit')
+        ->where('pe.nro_kit', '=', $nroKit)
+        ->select('pe.nro_kit', 'al.control_desde', 'al.control_hasta')
+        ->distinct()
+        ->get();
+
+    $rangoNumerosControl = [];
+    if ($resultados->isNotEmpty()) {
+        foreach ($resultados as $resultado) {
+            $rangoNumerosControl = array_merge(
+                $rangoNumerosControl,
+                range($resultado->control_desde, $resultado->control_hasta)
+            );
+        }
+        $rangoNumerosControl = array_unique($rangoNumerosControl);
+
+        $descartados = AnsvDescartes::whereBetween('control', [$resultados[0]->control_desde, $resultados[0]->control_hasta])
+            ->distinct()
+            ->get(['control']);
+
+        $desFaltante = [];
+
+        $controlesDescartados = $descartados->pluck('control')->toArray();
+        $controlesDescartes = $descartes->pluck('control')->toArray();
+        $controlesFaltantes = array_diff($controlesDescartados, $controlesDescartes);
+
+        $descartadosFaltantes = $descartados->filter(function ($descartado) use ($controlesFaltantes) {
+            return in_array($descartado->control, $controlesFaltantes);
+        });
+
+        foreach ($descartadosFaltantes as $descartadoFaltante) {
+            $desFaltante[] = $descartadoFaltante->control;
+        }
+
+        $controlesFaltantes2 = array_diff($rangoNumerosControl, $controlesDescartados, $controlesDescartes, $descartados->pluck('control')->toArray(), $desFaltante);
+
+        $controlesFaltantesNoBlancos = array_diff($controlesFaltantes2, $blancos->pluck('control')->toArray());
+    } else {
+        $rangoNumerosControl = [];
+        $desFaltante = [];
+        $controlesFaltantesNoBlancos = [];
+    }
+
+    return view('patrimonio.mostrar_datos', compact('descartes', 'blancos', 'nroKit', 'desFaltante', 'controlesFaltantesNoBlancos'));
+}
+
+
+
+
+    public function patrimonioBlancosDescartes(Request $request) {
+
+        $seleccionLotes = $request->input('seleccion');
+
+        return view('patrimonio.blancosDescartes');
+        
+        
+        
+        }
+        
+        
+
+
+
+
     public function guardarLotePatrimonio(Request $request) {
 
-        // Validar los datos del formulario según sea necesario
         $request->validate([
             'nro_control_desde' => 'required|numeric',
             'nro_control_hasta' => 'required|numeric',
@@ -510,15 +795,12 @@ class ReportesController2 extends Controller
             ],
         ]);
 
-        // Obtener el ID del usuario autenticado
         $userId = Auth::user()->id;
 
-        // Obtener el rango del nuevo lote
         $nuevoDesde = $request->input('nro_control_desde');
         $nuevoHasta = $request->input('nro_control_hasta');
         $nuevoNroKit = $request->input('nro_kit');
 
-        // Verificar si ya existe un registro con solapamiento en los rangos
         $existeSolapamiento = DB::table('ansv_lotes_patrimonio')
             ->where(function ($query) use ($nuevoDesde, $nuevoHasta) {
                 $query->whereBetween('nro_control_desde', [$nuevoDesde, $nuevoHasta])
@@ -532,12 +814,10 @@ class ReportesController2 extends Controller
             ->exists();
 
         if ($existeSolapamiento) {
-            // Si existe solapamiento o el mismo número de kit, mostrar un mensaje de error y redirigir de nuevo al formulario
-            // return redirect()->route('cargarLote')->withErrors(['error' => 'Ya existe un registro con solapamiento en los rangos de control o el mismo número de kit.'])->withInput();
+           
             return redirect()->route('cargarLote')->with('custom_error', 'Ya existe un registro con solapamiento en los rangos de control o el mismo número de kit.')->withInput();
         }
 
-        // Si no existe solapamiento, proceder con la inserción
         DB::table('ansv_lotes_patrimonio')->insert([
             'nro_control_desde' => $nuevoDesde,
             'nro_control_hasta' => $nuevoHasta,
@@ -558,6 +838,27 @@ class ReportesController2 extends Controller
     public function CargarLotePatrimonio (Request $request) {
         return view('patrimonio.cargar_lote');
     }
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public function obtenerCodificados(Request $request)
@@ -582,52 +883,40 @@ class ReportesController2 extends Controller
             ->whereNotIn('nro_control', $descartados->pluck('control'))
             ->get(['tramite_id', 'nro_control', 'created_by']);
 
-        // Obtener los nombres de las personas asociadas a los IDs de 'created_by'
         $createdByIDs = $codificados->pluck('created_by');
 
-        // $usuarios = User::whereIn('sys_user_id', $createdByIDs)->get(['sys_user_id', 'name']);
         $usuarios = SysUsers::whereIn('id', $createdByIDs)->get(['id', 'first_name', 'last_name']);
 
-        // Obtener los nro_doc de los tramites asociados a los codificados
         $tramiteIDs = $codificados->pluck('tramite_id');
 
 
         $tramites = Tramites::whereIn('tramite_id', $tramiteIDs)->get(['tramite_id', 'nro_doc','sexo']);
 
-        // Reemplazar los IDs por los nombres y nro_doc correspondientes en el resultado
         $codificados = $codificados->map(function ($codificado) use ($usuarios, $tramites) {
-            // $usuario = $usuarios->where('sys_user_id', $codificado->created_by)->first();
-            // if ($usuario) {
-            //     $nombre = $usuario->name; // Obtener el nombre del usuario
-            //     $codificado->created_by = $nombre;
-            // } else {
-            //     $created_by =   $codificado->created_by;
-            //     $codificado->created_by = $created_by; // Establecer 'Desconocido' si no se encuentra el usuario
-            // }
+          
 
             $usuario = $usuarios->where('id', $codificado->created_by)->first();
             if ($usuario) {
-                $nombre = $usuario->first_name; // Obtener el nombre del usuario
-                $apellido = $usuario->last_name; // Obtener el apellido del usuario
-                $codificado->created_by = $nombre . ' ' . $apellido; // Combinar nombre y apellido
+                $nombre = $usuario->first_name; 
+                $apellido = $usuario->last_name; 
+                $codificado->created_by = $nombre . ' ' . $apellido; 
             } else {
-                $codificado->created_by = 'Desconocido'; // Establecer 'Desconocido' si no se encuentra el usuario
+                $codificado->created_by = 'Desconocido'; 
             }
 
             $tramite = $tramites->where('tramite_id', $codificado->tramite_id)->first();
             if ($tramite) {
-                $nro_doc = $tramite->nro_doc; // Obtener el nro_doc del tramite
+                $nro_doc = $tramite->nro_doc; 
                 $sexo = $tramite->sexo;
                 $codificado->nro_doc = $nro_doc;
                 $codificado->sexo = $sexo;
             } else {
-                $codificado->nro_doc = 'N.C'; // Establecer 'N.C' si no se encuentra el tramite
+                $codificado->nro_doc = 'N.C'; 
             }
 
             return $codificado;
         });
 
-        // return response()->json($codificados);
         $numeroKit = $lote->nro_kit;
 
         return response()->json([
@@ -636,21 +925,36 @@ class ReportesController2 extends Controller
         ]);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function obtenerDescartes(Request $request)
     {
         $loteId = $request->input('loteId');
 
-        // Obtener el rango de control_desde y control_hasta del lote
         $lote = AnsvLotes::where('lote_id', $loteId)->first();
 
-        // Obtener los descartes dentro del rango de control_desde y control_hasta
         $descartes = AnsvDescartes::whereBetween('control', [$lote->control_desde, $lote->control_hasta])
             ->distinct()
             ->get(['control', 'descripcion', 'created_by']);
 
         $createdByIDs = $descartes->pluck('created_by')->unique();
 
-        // Obtener los nombres de los usuarios correspondientes al campo created_by
+     
         $usuarios = SysUsers::whereIn('id', $createdByIDs)->get(['id', 'first_name', 'last_name']);
 
         // Obtener los datos de la tabla AnsvControl
@@ -818,6 +1122,7 @@ class ReportesController2 extends Controller
         }
 
         $cantidadBlancos = count($blancos);
+        // dd($cantidadBlancos);
 
         return response()->json([
             'cantidadBlancos' => $cantidadBlancos,
