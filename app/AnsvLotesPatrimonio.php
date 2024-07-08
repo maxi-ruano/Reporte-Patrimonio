@@ -15,7 +15,7 @@ class AnsvLotesPatrimonio extends Model
     public $timestamps = false;
 
     protected $primaryKey = 'id';
-    protected $fillable = ['id', 'nro_control_desde', 'nro_control_hasta', 'fecha_recibido_nacion', 'fecha_habilitado_sede', 'fecha_recibido_sede', 'creation_by', 'modification_date','nro_kit'];
+    protected $fillable = ['id', 'nro_control_desde', 'nro_control_hasta', 'fecha_recibido_nacion', 'fecha_habilitado_sede', 'fecha_recibido_sede', 'creation_by', 'modification_date','nro_kit','aprobation_date'];
     
     // const DELETED_AT = 'end_date';
     // protected $dates = ['end_date'];

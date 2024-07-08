@@ -6,12 +6,7 @@
 
 <style>
 
-    /* .btn-DescBlan{
-        margin-left: 300px;
-        position: relative;
-    }
-     */
-    
+  
     
     </style>
     
@@ -27,17 +22,7 @@
     </div>
 @endif
     
-{{-- <form action="{{ route('reporteLotesPatrminio') }}" method="GET" style="margin-top:1em"  id="formBuscarKit">
-    
-    @csrf
-    <div class="form-group">
-        <label for="kit">Buscar por Nro Kit:</label>
-        <input type="text" name="kit" id="inputKit" class="form-control" placeholder="Ingrese el número de kit">
-    </div>
-    <button type="submit" class="btn btn-primary">Buscar</button>
-</form>
 
-<div id="resultadosBusqueda"></div> --}}
 <form action="{{ route('reporteLotesPatrminio') }}" method="GET" style="margin-top: 1em">
     @csrf
     <div class="form-group">
@@ -72,6 +57,8 @@
                 <option value="asignarLote">Asignar Lote</option>
                 <option value="enviarNacion">Enviar Nacion</option>
                 <option value="enviarSede">Enviar Sede</option>
+                <option value="aprobado">Aprobado</option>
+
                 
                 <!-- Agrega más opciones según las acciones que desees -->
             </select>
@@ -101,8 +88,12 @@
                         <th>Recibido sede</th>
                         <th>Habilitado por la sede</th>
                         <th>Enviado de sede</th>
-                        <th>Enviado de Descartes y Blancos Nacion</th>
-                        <th>Desc/Blanc</th>
+                        {{-- <th>Enviado de Descartes y Blancos Nacion</th> --}}
+                        {{-- <th>Desc/Blanc</th> --}}
+                        <th>Editar</th> 
+                        <th>Desc/Blanc Sede</th> 
+                        <th>Aprobado</th> 
+
                     </tr>
                 </thead>
                 <tbody>
@@ -120,13 +111,33 @@
                             <td>{{ $resultado->fecha_recibido_sede }}</td>
                             <td>{{ $resultado->fecha_habilitado_sede }}</td>
                             <td>{{ $resultado->fecha_enviado_sede }}</td>
-                            <td>{{ $resultado->fecha_enviado_nacion }}</td>
-                            <td>
+                            {{-- <td>{{ $resultado->fecha_enviado_nacion }}</td> --}}
+
+                            {{-- <td>
                                 
                                 <a href="{{ route('mostrarDatos', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-success btn-DescBlan">Ver Descartes y blancos</a>
 
+                            </td> --}}
+                            {{-- <td>
+                                
+                                <a href="{{ route('mostrarDatos4', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-success btn-DescBlan">Ver Descartes y blancos</a>
+
+                            </td> --}}
+
+                            <td>
+                                @if($resultado->sucursal_description == null || $resultado->fecha_enviado_sede == null || $resultado->fecha_enviado_nacion == null)
+                                    <a href="{{ route('editarLotePatrimonio', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-primary">Editar</a>
+                                @endif
                             </td>
                             
+                            <td>
+                                
+                                <a href = "{{ route('recibiSede', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-success btn-DescBlan">Recibi de la sede </a>
+
+                            </td>
+                          
+                            <td>{{ $resultado->aprobation_date }}</td>
+
                         </tr>
                     @endforeach          
                 </tbody>       

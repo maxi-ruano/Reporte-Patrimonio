@@ -67,7 +67,7 @@
                   
                    <div class="form-group">
                         <label for="nro_kit">Nro Kit:</label>
-                        <input type="text" name="nro_kit" id="nro_kit" class="form-control" required>
+                        <input type="number" name="nro_kit" id="nro_kit" class="form-control" required>
                   
                     </div>
 

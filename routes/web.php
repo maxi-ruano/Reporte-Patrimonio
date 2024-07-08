@@ -99,6 +99,15 @@ Route::match(['get', 'post'], 'reporteLotesPatrimonio', 'ReportesController2@rep
 Route::get('descartesBlancosPatrimonio',['uses' => 'ReportesController2@descartesBlancosPatrimonio','as' => 'descartesBlancosPatrimonio']);
 
 
+Route::get('/editar-lote-patrimonio/{nro_kit}','ReportesController2@editarLotePatrimonio')->name('editarLotePatrimonio');
+
+Route::put('/actualizar-lote-patrimonio/{nro_kit}','ReportesController2@actualizarLotePatrimonio')->name('actualizarLotePatrimonio');
+
+
+
+
+
+
 Route::get('/cargar-lote', 'ReportesController2@cargarLotePatrimonio')->name('cargarLote');
 
 Route::post('/cargar-lote', 'ReportesController2@cargarLotePatrimonio')->name('cargarLote');
@@ -113,6 +122,13 @@ Route::post('/acciones', 'ReportesController2@acciones')->name('acciones');
 Route::post('/acciones-descartes-blancos', 'ReportesController2@accionesDescartesBlancos')->name('accionesDescartesBlancos');
 
 Route::get('/mostrar-datos', 'ReportesController2@mostrarDatos')->name('mostrarDatos');
+
+Route::get('/mostrar-datos2', 'ReportesController2@mostrarDatos2')->name('mostrarDatos2');
+
+Route::get('/mostrar-datos4', 'ReportesController2@mostrarDatos4')->name('mostrarDatos4');
+
+Route::get('/recibi-sede', 'ReportesController2@recibiSede')->name('recibiSede');
+
 
 
 
@@ -182,4 +198,11 @@ Route::group(['prefix' => 'api'], function () {
   Route::post('aviso_pago', 'SoapServerController@index')->name('aviso_pago');
 });
 
+
+// Route::post('/guardar-observaciones/{loteId}', 'reportesController2@guardar');
+
+
+Route::post('/guardar-observaciones', 'ReportesController2@guardar')->name('guardar_observaciones');
+
+Route::get('/obtener-observaciones/{loteId}', 'ReportesController2@obtenerObservaciones')->name('obtener_observaciones');
 

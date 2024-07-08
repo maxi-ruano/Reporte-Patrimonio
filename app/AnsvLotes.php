@@ -11,7 +11,7 @@ class AnsvLotes extends Model
   use SoftDeletes;
   protected $table = 'ansv_lotes';
   protected $primaryKey = 'lote_id';
-  protected $fillable = ['lote_id', 'sucursal_id', 'control_desde', 'control_hasta', 'habilitado', 'created_by', 'creation_date', 'modified_by', 'modification_date', 'end_date', 'nro_kit'];
+  protected $fillable = ['lote_id', 'sucursal_id', 'control_desde', 'control_hasta', 'habilitado', 'created_by', 'creation_date', 'modified_by', 'modification_date', 'end_date', 'nro_kit','observaciones'];
   public $timestamps = false;
 const DELETED_AT = 'end_date';
 protected $dates = ['end_date'];
