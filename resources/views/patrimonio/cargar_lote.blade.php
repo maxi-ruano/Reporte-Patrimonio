@@ -22,7 +22,7 @@
 
 
  
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label for="nro_control_desde">Nro Control Desde:</label>
                         <input type="number" name="nro_control_desde" id="nro_control_desde" class="form-control" required >
                      
@@ -39,40 +39,36 @@
                         <input type="date" name="fecha_recibido_nacion" " class="form-control"  required>
                      
                     </div>
-
-                    {{-- <div class="form-group">
-                        <label for="nro_control_hasta"> Fecha_Habilitado_Sede</label>
-                        <input type="date" name="fecha_habilitado_sede" id="nro_control_hasta" class="form-control"  >
-                     
-                    </div> --}}
-
                     <div class="form-group">
-                        <label for="nro_control_hasta">Fecha_Recibido_Sede</label>
-                        <input type="date" name="fecha_recibido_sede" id="nro_control_hasta" class="form-control" required  >
-                     
-                    </div>
-
-                    {{-- <div class="form-group">
-                        <label for="nro_control_hasta">Creation_By</label>
-                        <input type="number" name="creation_by" id="nro_control_hasta" class="form-control" >
-                     
-                    </div> --}}
-
-                    {{-- <div class="form-group">
-                        <label for="nro_control_hasta">Modification_Date </label>
-                        <input type="date" name="modification_date" id="nro_control_hasta" class="form-control" >
-                     
-                    </div> --}}
-
-                  
-                   <div class="form-group">
                         <label for="nro_kit">Nro Kit:</label>
                         <input type="number" name="nro_kit" id="nro_kit" class="form-control" required>
                   
+                    </div> --}}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="nro_control_desde">Nro Control Desde:</label>
+                                <input type="number" name="nro_control_desde" id="nro_control_desde" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nro_control_hasta">Nro Control Hasta:</label>
+                                <input type="number" name="nro_control_hasta" id="nro_control_hasta" class="form-control" required>
+                            </div>
+                        </div>
                     </div>
-
-                
                     
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="fecha_recibido_nacion">Fecha Recibido Nacion:</label>
+                                <input type="date" name="fecha_recibido_nacion" id="fecha_recibido_nacion" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nro_kit">Nro Kit:</label>
+                                <input type="number" name="nro_kit" id="nro_kit" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>                    
                     <button type="submit" class="btn btn-primary">Crear Lote</button>
 
               @if (session('success'))

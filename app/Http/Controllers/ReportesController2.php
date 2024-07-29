@@ -149,7 +149,7 @@ class ReportesController2 extends Controller
             ->first();
             $nroKit = $lote->nro_kit;
             // Aquí redireccionamos a la vista 'mostrarDatos' con los parámetros necesarios
-            return redirect()->route('mostrarDatos', ['nro_kit' => $nroKit]);
+            return redirect()->route('datosAPatrimonio', ['nro_kit' => $nroKit]);
         }elseif ($accion == 'Elegir accion') {
 
         return back()->withErrors(['Por favor elige una acción'])->withInput();
@@ -486,7 +486,7 @@ class ReportesController2 extends Controller
             }
     
             // Aquí redireccionamos a la vista 'mostrarDatos' con los parámetros necesarios
-            return redirect()-> route('mostrarDatos', ['nro_kit' => $selectedItems[0]]); 
+            return redirect()-> route('datosApatrimonio', ['nro_kit' => $selectedItems[0]]); 
         }
 
         if ($accion === 'asignarLote') {
@@ -561,7 +561,7 @@ class ReportesController2 extends Controller
                 return redirect()->back()->with(['custom_error' => 'No se han seleccionado lotes para enviar a Sede .'])->withInput();
             }
         }
-        if ($accion === 'aprobado') {
+        if ($accion === 'recibiSede') {
              $seleccionLotes = $request->input('seleccion');
             
             if (!empty($seleccionLotes)) {
@@ -764,7 +764,7 @@ private function registrarLog( $nroKit) {
 
 
 
-public function mostrarDatos2(Request $request)
+public function datosEnviadosPatrimonio(Request $request)
 {
     $nroKit = $request->input('nro_kit');
     $descartes = DB::table('patrimonioenviadonacion')
@@ -828,7 +828,7 @@ $nroControlHasta = $controlHasta;
     return view('patrimonio.mostrar_datos2', compact('descartes', 'blancos', 'nroKit', 'desFaltante', 'controlesFaltantesNoBlancos', 'nroControlDesde', 'nroControlHasta'));
 }
 
-public function mostrarDatos(Request $request)
+public function datosApatrimonio(Request $request)
 {
     $nroKit = $request->input('nro_kit');
 
@@ -962,7 +962,6 @@ public function recibiSede(Request $request)
             'nro_control_desde' => 'required|numeric',
             'nro_control_hasta' => 'required|numeric',
             'fecha_recibido_nacion' => 'required|date',
-            'fecha_recibido_sede' => 'required|date',
             'nro_kit' => [
                 'required',
                 'string',
@@ -1002,7 +1001,7 @@ public function recibiSede(Request $request)
             'nro_control_hasta' => $nuevoHasta,
             'fecha_recibido_nacion' => $request->input('fecha_recibido_nacion'),
             'fecha_habilitado_sede' => $request->input('fecha_habilitado_sede'),
-            'fecha_recibido_sede' => $request->input('fecha_recibido_sede'),
+            'fecha_recibido_sede' =>  null,
             'creation_by' => $userId,
             'modification_date' => $request->input('modification_date'),
             'nro_kit' => $nuevoNroKit,

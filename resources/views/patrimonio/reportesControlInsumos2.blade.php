@@ -26,10 +26,19 @@
 <form action="{{ route('reporteLotesPatrminio') }}" method="GET" style="margin-top: 1em">
     @csrf
     <div class="form-group">
+        <div style="margin-bottom: 1rem;">
         <label for="kit">Buscar por Nro Kit:</label>
+        </div>
+        <div class="col-md-4" style="padding-left: 0; display: inline-block; width: 30%;">
         <input type="text" id="inputKit" name="kit" class="form-control" placeholder="Ingrese el número de kit">
     </div>
+    </br>
+    </br>
+    <div style="margin-top: 1em">
     <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+</div>
+
 </form>
 
 
@@ -57,7 +66,7 @@
                 <option value="asignarLote">Asignar Lote</option>
                 <option value="enviarNacion">Enviar Nacion</option>
                 <option value="enviarSede">Enviar Sede</option>
-                <option value="aprobado">Aprobado</option>
+                <option value="recibiSede">Recibi Sede</option>
 
                 
                 <!-- Agrega más opciones según las acciones que desees -->
@@ -92,7 +101,6 @@
                         {{-- <th>Desc/Blanc</th> --}}
                         <th>Editar</th> 
                         <th>Desc/Blanc Sede</th> 
-                        <th>Aprobado</th> 
 
                     </tr>
                 </thead>
@@ -108,7 +116,8 @@
                             <td>{{ $resultado->nro_control_hasta }}</td>
                             <td>{{ $resultado->sucursal_description }}</td>
                             <td>{{ $resultado->fecha_recibido_nacion }}</td>
-                            <td>{{ $resultado->fecha_recibido_sede }}</td>
+                            {{-- <td>{{ $resultado->fecha_recibido_sede }}</td> --}}
+                            <td>{{ $resultado->aprobation_date }}</td>
                             <td>{{ $resultado->fecha_habilitado_sede }}</td>
                             <td>{{ $resultado->fecha_enviado_sede }}</td>
                             {{-- <td>{{ $resultado->fecha_enviado_nacion }}</td> --}}
@@ -126,17 +135,21 @@
 
                             <td>
                                 @if($resultado->sucursal_description == null || $resultado->fecha_enviado_sede == null || $resultado->fecha_enviado_nacion == null)
-                                    <a href="{{ route('editarLotePatrimonio', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-primary">Editar</a>
+                                    <a href="{{ route('editarLotePatrimonio', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-primary">
+                                        <i class="fa fa-edit" aria-hidden="true"></i>
+                                    </a>
+                                    
                                 @endif
                             </td>
                             
                             <td>
                                 
-                                <a href = "{{ route('recibiSede', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-success btn-DescBlan">Recibi de la sede </a>
+                                <a href = "{{ route('recibiSede', ['nro_kit' => $resultado->nro_kit]) }}" class="btn btn-success btn-DescBlan">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                </a>
 
                             </td>
                           
-                            <td>{{ $resultado->aprobation_date }}</td>
 
                         </tr>
                     @endforeach          

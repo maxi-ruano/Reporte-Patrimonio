@@ -121,11 +121,9 @@ Route::post('/acciones', 'ReportesController2@acciones')->name('acciones');
 
 Route::post('/acciones-descartes-blancos', 'ReportesController2@accionesDescartesBlancos')->name('accionesDescartesBlancos');
 
-Route::get('/mostrar-datos', 'ReportesController2@mostrarDatos')->name('mostrarDatos');
+Route::get('/datos-a-patrimonio', 'ReportesController2@datosAPatrimonio')->name('datosAPatrimonio');
 
-Route::get('/mostrar-datos2', 'ReportesController2@mostrarDatos2')->name('mostrarDatos2');
-
-Route::get('/mostrar-datos4', 'ReportesController2@mostrarDatos4')->name('mostrarDatos4');
+Route::get('/datos-enviados-patrimonio', 'ReportesController2@datosEnviadosPatrimonio')->name('datosEnviadosPatrimonio');
 
 Route::get('/recibi-sede', 'ReportesController2@recibiSede')->name('recibiSede');
 

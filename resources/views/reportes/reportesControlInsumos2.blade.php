@@ -233,7 +233,13 @@
                                 <th>N° Kit </th>
                                 <th>Habilitado</th>
                                 <th>Observaciones</th>
-                                <th>Desc/Blanc</th>
+                                {{-- <th>Agregar Observ</th>
+                                <th>Ver Codificados</th>
+                                <th>Ver Descartes</th>
+                                <th>Ver Blancos</th>
+
+
+                                <th>Desc/Blanc</th> --}}
 
                                 
 
@@ -261,40 +267,76 @@
                                     <td>{{ $insumo['nroKit'] }}</td>
                                     <td>
                                         @if($insumo['habilitado'])
-                                            true
+                                        <button class="btn btn-success btn-sm">Sí</button>
                                         @else
-                                            false
+                                        <button class="btn btn-danger btn-sm">No</button>
                                         @endif
                                     </td>
                                 {{-- <td>
                                     observaciones
                                 </td> --}}
                                 <td>{{ $insumo['observaciones'] }}</td>
-
-                                
+{{-- 
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-observaciones" data-toggle="modal" data-target="#observacionesModal" data-lote-id="{{ $insumo['lote_id'] }}">
+                                        <i class="fa fa-comment" aria-hidden="true"></i>
+                                    </button>
+                                </td>
                                           
+                                  
                                     <td align="center">
-                                      <button class="btn btn-primary btn-codificados btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#codificadosModal">Codificados</button>
+                                        <button class="btn btn-secondary btn-codificados btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#codificadosModal">
+                                            <i class="fa fa-address-card" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                    <td align="center">
+                                        <button class="btn btn-danger btn-descartes btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#descartesModal">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
                                     </td>
 
                                     <td align="center">
-                                    	<button class="btn btn-primary btn-descartes btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#descartesModal">Descartes</button>
+                                        <button class="btn btn-warning btn-blancos btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#blancosModal">
+                                            <i class="fa fa-square" aria-hidden="true"></i>
+                                        </button>
                                     </td>
-
-                                   <td align="center">
-                                    <button class="btn btn-primary btn-blancos btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#blancosModal">Blancos</button>
-                                   </td>
-                                   {{-- <td>
-                                    <button class="btn btn-primary btn-observaciones" name="observaciones" data-toggle="modal" data-target="#observacionesModal" data-lote-id="{{ $insumo['lote_id'] }}">Agregar Observaciones</button>
-                                </td> --}}
+                                  
                                
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-observaciones" data-toggle="modal" data-target="#observacionesModal" data-lote-id="{{ $insumo['lote_id'] }}">Agregar Observaciones</button>
-                                    </td>
+                                    
                                     
                                     <td>
-                                        <a href="{{ route('mostrarDatos2', ['nro_kit' => $insumo['nroKit']]) }}" class="btn btn-success btn-DescBlan">Ver Descartes y blancos</a>
+                                        <a href="{{ route('mostrarDatos2', ['nro_kit' => $insumo['nroKit']]) }}" class="btn btn-success btn-DescBlan">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </a>
+                                    </td> --}}
+                                    <td align="center">
+                                        <!-- Botón Agregar Observaciones -->
+                                        <button type="button" class="btn btn-primary btn-observaciones" data-toggle="modal" data-target="#observacionesModal" data-lote-id="{{ $insumo['lote_id'] }}" title="Agregar Observaciones">
+                                            <i class="fa fa-comment" aria-hidden="true"></i>
+                                        </button>
+                                        
+                                        <!-- Botón Codificados -->
+                                        <button class="btn btn-secondary btn-codificados btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#codificadosModal" title="Codificados">
+                                            <i class="fa fa-address-card" aria-hidden="true"></i>
+                                        </button>
+                                        
+                                        <!-- Botón Descartes -->
+                                        <button class="btn btn-danger btn-descartes btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#descartesModal" title="Descartes">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                        
+                                        <!-- Botón Blancos -->
+                                        <button class="btn btn-warning btn-blancos btn-sm" data-lote-id="{{ $insumo['lote_id'] }}" data-toggle="modal" data-target="#blancosModal" title="Blancos">
+                                            <i class="fa fa-square" aria-hidden="true"></i>
+                                        </button>
+                                        
+                                        <!-- Botón Mostrar Datos -->
+                                        <a href="{{ route('datosEnviadosPatrimonio', ['nro_kit' => $insumo['nroKit']]) }}" class="btn btn-success btn-DescBlan" title="Descartes y Blancos">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </a>
                                     </td>
+                                    
+                                    
                                     
                                 
                       </tr>
