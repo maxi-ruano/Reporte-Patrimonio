@@ -570,7 +570,7 @@ class ReportesController2 extends Controller
                 }
                 // Actualizar la columna 'aprobation_date' con la fecha y hora actuales usando Eloquent
                 AnsvLotesPatrimonio::whereIn('id', $seleccionLotes)
-                    ->update(['aprobation_date' => Carbon::now()]);
+                    ->update(['fecha_recibido_sede' => Carbon::now()]);
     
                 return redirect()->back()->with('success', 'Los lotes han sido aprobados correctamente.');
             } else {

@@ -116,8 +116,7 @@
                             <td>{{ $resultado->nro_control_hasta }}</td>
                             <td>{{ $resultado->sucursal_description }}</td>
                             <td>{{ $resultado->fecha_recibido_nacion }}</td>
-                            {{-- <td>{{ $resultado->fecha_recibido_sede }}</td> --}}
-                            <td>{{ $resultado->aprobation_date }}</td>
+                            <td>{{ $resultado->fecha_recibido_sede }}</td> 
                             <td>{{ $resultado->fecha_habilitado_sede }}</td>
                             <td>{{ $resultado->fecha_enviado_sede }}</td>
                             {{-- <td>{{ $resultado->fecha_enviado_nacion }}</td> --}}
